@@ -8,10 +8,13 @@ interface UserTableProps {
   users: User[];
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
-  handleCreateUser: (payload: CreateUserInput) => void;
+  editingUser?: User;
+  onCloseEdit: () => void;
+  handleCreateUser: (payload: CreateUserInput) => Promise<boolean>;
+  handleEditSave: (payload: CreateUserInput) => Promise<boolean>;
 }
 
-export function UserTable({ users, onEdit, onDelete, handleCreateUser }: UserTableProps) {
+export function UserTable({ users, onEdit, onDelete, editingUser, onCloseEdit, handleCreateUser, handleEditSave }: UserTableProps) {
   const [open, setOpen] = useState(false);
   return (
 
@@ -23,6 +26,15 @@ export function UserTable({ users, onEdit, onDelete, handleCreateUser }: UserTab
         setOpen={setOpen}
         mode="create"
         onSubmit={handleCreateUser}
+      />
+      <UserModal
+        open={Boolean(editingUser)}
+        setOpen={(value) => {
+          if (!value) onCloseEdit();
+        }}
+        mode="edit"
+        selectedUser={editingUser}
+        onSubmit={handleEditSave}
       />
       <motion.section
         className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-xl"
