@@ -33,13 +33,13 @@ export function Login() {
 
   const handleFieldChange =
     (field: keyof LoginFormState) =>
-      (event: ChangeEvent<HTMLInputElement>): void => {
-        setForm((previous) => ({
-          ...previous,
-          [field]: event.target.value,
-        }));
-        clearAuthError();
-      };
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      setForm((previous) => ({
+        ...previous,
+        [field]: event.target.value,
+      }));
+      clearAuthError();
+    };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -69,18 +69,20 @@ export function Login() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
       >
-        <div className="flex items-center justify-center gap-2 mb-1">
-          <img src={"/logo.png"} alt="Logo" className="w-16 h-16 rounded-full" />
+        <div className="mb-1 flex items-center justify-center gap-2">
+          <img src={"/logo.png"} alt="Logo" className="h-16 w-16 rounded-full" />
           <h1 className="text-3xl font-bold">Inicia sesion</h1>
         </div>
-        <p className="mb-10 text-base text-slate-400 text-center">Un sistema de prueba de usuarios evalúa la autenticación y los permisos de acceso en un entorno seguro. </p>
+        <p className="mb-10 text-center text-base text-slate-400">Un sistema de prueba de usuarios evalúa la autenticación y los permisos de acceso en un entorno seguro. </p>
         <form className="mt-4 grid gap-3" onSubmit={handleSubmit}>
           <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3">
             <FiUser className="min-w-[18px] text-slate-400" />
             <input
               className="w-full bg-transparent py-3 text-sm text-slate-50 outline-none placeholder:text-slate-500"
               type="text"
-              placeholder="Username"
+              placeholder="Usuario"
+              autoComplete="username"
+              id="username"
               value={form.username}
               onChange={handleFieldChange("username")}
             />
@@ -90,7 +92,9 @@ export function Login() {
             <input
               className="w-full bg-transparent py-3 text-sm text-slate-50 outline-none placeholder:text-slate-500"
               type="password"
-              placeholder="Password"
+              placeholder="Contraseña"
+              autoComplete="current-password"
+              id="password"
               value={form.password}
               onChange={handleFieldChange("password")}
             />
@@ -99,7 +103,7 @@ export function Login() {
             initial={{ scale: 0.95, y: 8 }}
             animate={{ scale: 1, y: 0 }}
             whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
-            className="inline-flex w-full items-center justify-center rounded-lg border border-blue-800 bg-blue-800 px-4 py-2.5 font-semibold text-slate-50  hover:-translate-y-0.5 hover:border-blue-900 hover:bg-blue-900 cursor-pointer"
+            className="inline-flex w-full cursor-pointer items-center justify-center rounded-lg border border-blue-800 bg-blue-800 px-4 py-2.5 font-semibold text-slate-50 hover:-translate-y-0.5 hover:border-blue-900 hover:bg-blue-900"
             type="submit"
           >
             Login

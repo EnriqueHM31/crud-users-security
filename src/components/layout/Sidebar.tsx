@@ -36,7 +36,7 @@ export function Sidebar() {
               }
             >
               <FiUser />
-              <span>Perfiles</span>
+              <span>Perfil</span>
             </NavLink>
           </>
         ) : null}
