@@ -4,6 +4,8 @@ import { FiLock, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useAuthActions, useAuthError, useIsAuthenticated } from "../hooks/useAuth";
 import { toast } from "sonner";
+import { useAuthenticatedUser } from "../hooks/useUsers";
+import { getDefaultRouteForRole } from "../utils/auth";
 
 interface LoginFormState {
   username: string;
@@ -19,12 +21,16 @@ export function Login() {
   const [form, setForm] = useState<LoginFormState>(initialState);
   const [formError, setFormError] = useState<string>("");
   const isAuthenticated = useIsAuthenticated();
+  const authenticatedUser = useAuthenticatedUser();
   const authError = useAuthError();
   const { login, clearAuthError } = useAuthActions();
   const navigate = useNavigate();
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    if (!authenticatedUser) {
+      return <Navigate to="/login" replace />;
+    }
+    return <Navigate to={getDefaultRouteForRole(authenticatedUser.role)} replace />;
   }
 
   const handleFieldChange =
@@ -52,9 +58,9 @@ export function Login() {
       return;
     }
 
-    const isValidLogin = login({ username, password });
-    if (isValidLogin) {
-      navigate("/dashboard", { replace: true });
+    const loggedUser = login({ username, password });
+    if (loggedUser) {
+      navigate(getDefaultRouteForRole(loggedUser.role), { replace: true });
     }
   };
 
