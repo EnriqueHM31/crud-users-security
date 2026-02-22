@@ -17,15 +17,28 @@ export function Sidebar() {
 
       <nav className="grid gap-2">
         {user?.role === "admin" ? (
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              isActive ? `${baseLinkClass} ${activeLinkClass}` : baseLinkClass
-            }
-          >
-            <FiGrid />
-            <span>Dashboard</span>
-          </NavLink>
+          <>
+
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                isActive ? `${baseLinkClass} ${activeLinkClass}` : baseLinkClass
+              }
+            >
+              <FiGrid />
+              <span>Dashboard</span>
+            </NavLink>
+
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                isActive ? `${baseLinkClass} ${activeLinkClass}` : baseLinkClass
+              }
+            >
+              <FiUser />
+              <span>Perfiles</span>
+            </NavLink>
+          </>
         ) : null}
         {user?.role === "user" ? (
           <NavLink

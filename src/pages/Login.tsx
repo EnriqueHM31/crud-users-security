@@ -1,9 +1,9 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { FiLock, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { useAuthActions, useAuthError, useIsAuthenticated } from "../hooks/useAuth";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { FiLock, FiUser } from "react-icons/fi";
+import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuthActions, useIsAuthenticated } from "../hooks/useAuth";
 import { useAuthenticatedUser } from "../hooks/useUsers";
 import { getDefaultRouteForRole } from "../utils/auth";
 
@@ -19,10 +19,8 @@ const initialState: LoginFormState = {
 
 export function Login() {
   const [form, setForm] = useState<LoginFormState>(initialState);
-  const [formError, setFormError] = useState<string>("");
   const isAuthenticated = useIsAuthenticated();
   const authenticatedUser = useAuthenticatedUser();
-  const authError = useAuthError();
   const { login, clearAuthError } = useAuthActions();
   const navigate = useNavigate();
 
@@ -40,7 +38,6 @@ export function Login() {
           ...previous,
           [field]: event.target.value,
         }));
-        setFormError("");
         clearAuthError();
       };
 
@@ -98,8 +95,6 @@ export function Login() {
               onChange={handleFieldChange("password")}
             />
           </label>
-          {formError ? <p className="text-sm text-rose-300">{formError}</p> : null}
-          {authError ? <p className="text-sm text-rose-300">{authError}</p> : null}
           <motion.button
             initial={{ scale: 0.95, y: 8 }}
             animate={{ scale: 1, y: 0 }}

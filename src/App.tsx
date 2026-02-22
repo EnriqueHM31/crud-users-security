@@ -1,10 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
+import { useIsAuthenticated } from "./hooks/useAuth";
+import { useAuthenticatedUser } from "./hooks/useUsers";
 import { Dashboard } from "./pages/Dashboard";
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Login";
-import { useIsAuthenticated } from "./hooks/useAuth";
-import { useAuthenticatedUser } from "./hooks/useUsers";
+import { Profile } from "./pages/Profile";
 import { getDefaultRouteForRole } from "./utils/auth";
 
 function HomeRedirect() {
@@ -29,8 +30,12 @@ function App() {
           <ProtectedRoute allowedRoles={["admin"]}>
             <Dashboard />
           </ProtectedRoute>
+
+
         }
       />
+
+      <Route path="/profile" element={<Profile />} />
       <Route
         path="/landing"
         element={

@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { useUserStore } from "./user.store";
 import type { AuthStore } from "../types/auth.types";
+import { useUserStore } from "./user.store";
 
 export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
