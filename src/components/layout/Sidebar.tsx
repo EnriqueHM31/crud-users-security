@@ -31,7 +31,7 @@ export function Sidebar() {
           }
         >
           <FiUser />
-          <span>Perfils</span>
+          <span>Perfil</span>
         </NavLink>
       </nav>
     </aside>
