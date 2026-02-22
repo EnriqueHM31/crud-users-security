@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaUser, FaEnvelope, FaLock, FaIdBadge } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaLock, FaIdBadge, FaUserShield } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import type { CreateUserInput, User } from "../../types/user.types";
 
@@ -17,6 +17,7 @@ const emptyValues: CreateUserInput = {
   name: "",
   password: "",
   email: "",
+  role: "user",
 };
 
 export function UserModal({
@@ -33,6 +34,7 @@ export function UserModal({
         name: selectedUser.name,
         password: selectedUser.password,
         email: selectedUser.email,
+        role: selectedUser.role,
       };
     }
     return emptyValues;
@@ -44,7 +46,7 @@ export function UserModal({
 
   const handleFieldChange =
     (field: keyof CreateUserInput) =>
-      (event: ChangeEvent<HTMLInputElement>) => {
+      (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setValues((prev) => ({
           ...prev,
           [field]: event.target.value,
@@ -146,6 +148,19 @@ export function UserModal({
                 >
                   {showPassword ? <IoEyeOff /> : <IoEye />}
                 </button>
+              </div>
+
+              {/* Role */}
+              <div className="relative">
+                <FaUserShield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <select
+                  value={values.role}
+                  onChange={handleFieldChange("role")}
+                  className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 pr-3 text-sm text-slate-100 focus:border-blue-500 outline-none"
+                >
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                </select>
               </div>
 
               {error && (
