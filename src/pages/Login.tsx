@@ -100,6 +100,7 @@ export function Login() {
                         initial={{ scale: 0.95, y: 8 }}
                         animate={{ scale: 1, y: 0 }}
                         whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+                        whileHover={{ scale: 0.95, transition: { duration: 0.2 } }}
                         className="inline-flex w-full cursor-pointer items-center justify-center rounded-lg border border-blue-800 bg-blue-800 px-4 py-2.5 font-semibold text-slate-50 hover:-translate-y-0.5 hover:border-blue-900 hover:bg-blue-900"
                         type="submit"
                     >

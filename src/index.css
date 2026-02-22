@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body {
+    font-family: 'Outfit Variable', sans-serif;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
