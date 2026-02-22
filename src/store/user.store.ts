@@ -17,9 +17,9 @@ const initialUsers: User[] = [
   },
   {
     id: generateUUID(),
-    username: "analyst",
+    username: "user",
     name: "Security Analyst",
-    password: "analyst123",
+    password: "user123",
     email: "analyst@security.lab",
     role: "user",
   },
@@ -80,7 +80,6 @@ export const useUserStore = create<UserState>((set, get) => ({
       toast.error("Contraseña incorrecta.");
       return null;
     }
-    toast.success("Usuario encontrado correctamente.");
     return user;
   }
 
