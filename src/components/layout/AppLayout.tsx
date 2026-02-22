@@ -13,8 +13,8 @@ export function AppLayout({ title, children }: AppLayoutProps) {
   const { logout } = useAuthActions();
   const navigate = useNavigate();
 
-  const handleLogout = (): void => {
-    logout();
+  const handleLogout = async (): Promise<void> => {
+    await logout();
     navigate("/login", { replace: true });
   };
 
