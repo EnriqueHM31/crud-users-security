@@ -15,7 +15,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         currentUserId: null,
         authError: "Invalid username or password.",
       });
-      return false;
+      return null;
     }
 
     set({
@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       currentUserId: user.id,
       authError: null,
     });
-    return true;
+    return user;
   },
   logout: () => {
     set({
