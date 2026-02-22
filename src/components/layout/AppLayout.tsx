@@ -19,9 +19,9 @@ export function AppLayout({ title, children }: AppLayoutProps) {
   };
 
   return (
-    <div className="grid min-h-screen bg-[radial-gradient(circle_at_top_right,#12203a,#06080f_45%)] text-slate-50 lg:grid-cols-[250px_1fr]">
+    <div className="grid min-h-screen bg-[radial-gradient(circle_at_top_right,#12203a,#06080f_45%)] text-slate-50 lg:grid-cols-[280px_1fr]">
       <Sidebar />
-      <section className="grid grid-rows-[auto_1fr]">
+      <section className="grid grid-rows-[auto_1fr] gap-4">
         <Navbar title={title} onLogout={handleLogout} />
         <main className="p-5">{children}</main>
       </section>
