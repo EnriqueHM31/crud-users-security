@@ -39,7 +39,7 @@ export function Dashboard() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <UserTable users={users} onEdit={setEditingUser} onDelete={setDeletingUser} handleCreateUser={handleCreateUser} />
+        <UserTable users={users} onEdit={setEditingUser} onDelete={setDeletingUser} handleCreateUser={handleCreateUser} handleEditSave={handleEditSave} />
       </motion.div>
 
       <DeleteUserDialog

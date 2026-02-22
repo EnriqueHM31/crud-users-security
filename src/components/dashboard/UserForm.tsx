@@ -1,6 +1,12 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaUser, FaEnvelope, FaLock, FaIdBadge, FaUserShield } from "react-icons/fa";
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaIdBadge,
+  FaUserShield,
+} from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import type { CreateUserInput, User } from "../../types/user.types";
 
@@ -27,22 +33,33 @@ export function UserModal({
   selectedUser,
   onSubmit,
 }: UserModalProps) {
-  const [values, setValues] = useState<CreateUserInput>(() => {
-    if (mode === "edit" && selectedUser) {
+  const isEdit = mode === "edit" && selectedUser;
+
+  const getInitialValues = (): CreateUserInput => {
+    if (isEdit && selectedUser) {
       return {
         username: selectedUser.username,
         name: selectedUser.name,
-        password: selectedUser.password,
+        password: "",
         email: selectedUser.email,
         role: selectedUser.role,
       };
     }
     return emptyValues;
-  });
-  const [error, setError] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  };
 
+  const [values, setValues] = useState<CreateUserInput>(getInitialValues);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
+  const handleOpenChange = (value: boolean) => {
+    if (value) {
+      setValues(getInitialValues());
+      setError("");
+      setShowPassword(false);
+    }
+    setOpen(value);
+  };
 
   const handleFieldChange =
     (field: keyof CreateUserInput) =>
@@ -56,20 +73,25 @@ export function UserModal({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const hasEmptyFields = Object.values(values).some(
-      (value) => value.trim().length === 0
-    );
-
-    if (hasEmptyFields) {
-      setError("All fields are required.");
+    if (
+      !values.username.trim() ||
+      !values.name.trim() ||
+      !values.email.trim() ||
+      (!isEdit && !values.password.trim())
+    ) {
+      setError("All required fields must be completed.");
       return;
     }
 
     onSubmit(values);
-    setOpen(false);
-    setValues(emptyValues);
-    setError("");
+    handleOpenChange(false);
   };
+
+  const title = isEdit ? "Editar usuario" : "Crear usuario";
+
+  const description = isEdit
+    ? "Modifica la información del usuario seleccionado."
+    : "Registra un nuevo usuario dentro del sistema.";
 
   return (
     <AnimatePresence>
@@ -79,23 +101,29 @@ export function UserModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={() => handleOpenChange(false)}
         >
           <motion.div
             className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
-            initial={{ scale: 0.9, opacity: 0, y: 40 }}
+            initial={{ scale: 0.95, opacity: 0, y: 40 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 40 }}
-            transition={{ duration: 0.3 }}
+            exit={{ scale: 0.95, opacity: 0, y: 40 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-bold text-slate-100">
               Sistema de usuarios
             </h2>
+
+            <h3 className="mt-2 text-lg font-semibold text-blue-400">
+              {title}
+            </h3>
+
             <p className="mt-1 mb-5 text-sm text-slate-400">
-              Esta modal permite {mode === "create" ? "crear nuevos usuarios" : "editar usuarios existentes"} dentro del sistema.
+              {description}
             </p>
 
             <form className="grid gap-4" onSubmit={handleSubmit}>
-              {/* Username */}
               <div className="relative">
                 <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
@@ -107,7 +135,6 @@ export function UserModal({
                 />
               </div>
 
-              {/* Name */}
               <div className="relative">
                 <FaIdBadge className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
@@ -119,7 +146,6 @@ export function UserModal({
                 />
               </div>
 
-              {/* Email */}
               <div className="relative">
                 <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
@@ -131,12 +157,13 @@ export function UserModal({
                 />
               </div>
 
-              {/* Password */}
               <div className="relative">
                 <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Password"
+                  placeholder={
+                    isEdit ? "Nueva contraseña (opcional)" : "Password"
+                  }
                   value={values.password}
                   onChange={handleFieldChange("password")}
                   className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 pr-10 text-sm text-slate-100 focus:border-blue-500 outline-none"
@@ -150,7 +177,6 @@ export function UserModal({
                 </button>
               </div>
 
-              {/* Role */}
               <div className="relative">
                 <FaUserShield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <select
@@ -170,14 +196,14 @@ export function UserModal({
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-blue-600 py-2 font-semibold text-white transition hover:bg-blue-700"
+                  className="flex-1 rounded-lg bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700"
                 >
-                  {mode === "create" ? "Crear usuario" : "Guardar cambios"}
+                  {isEdit ? "Guardar cambios" : "Crear usuario"}
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={() => handleOpenChange(false)}
                   className="flex-1 rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
                 >
                   Cancelar
