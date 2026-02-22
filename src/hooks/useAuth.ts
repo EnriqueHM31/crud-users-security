@@ -9,12 +9,16 @@ export const useAuthActions = () =>
     useShallow((state) => ({
       login: state.login,
       logout: state.logout,
-      clearAuthError: state.clearAuthError,
+      checkSession: state.checkSession,
+      clearMessages: state.clearMessages,
+
     }))
   );
 
-export const useAuthError = (): string | null =>
-  useAuthStore((state) => state.authError);
+export const useAuthLoading = (): boolean =>
+  useAuthStore((state) => state.isLoading);
+
+export const useAuthError = (): string | null => useAuthStore((state) => state.error);
 
 export const useCurrentUserId = () =>
   useAuthStore((state) => state.currentUserId);
