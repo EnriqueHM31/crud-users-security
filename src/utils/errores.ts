@@ -50,9 +50,11 @@ export async function handleApiError(response: Response): Promise<Response> {
 }
 
 export function getUserErrorMessage(error: unknown): string {
+    console.log(error);
     if (error instanceof Error) {
         const message = error.message.toLowerCase();
 
+        console.log(message);
         // Error típico cuando el backend no responde
         if (message.includes("failed to fetch")) {
             return "No se pudo conectar con el servidor. Verifica tu conexión o intenta más tarde.";
@@ -71,6 +73,14 @@ export function getUserErrorMessage(error: unknown): string {
         // Error interno del servidor
         if (message.includes("internal server error")) {
             return "Ocurrió un error en el servidor. Intenta más tarde.";
+        }
+
+        if (message.includes("invalid credentials")) {
+            return "Credenciales inválidas. Intenta nuevamente.";
+        }
+
+        if (message.includes("not found")) {
+            return "Algo fallo en la peticion. Intenta nuevamente.";
         }
 
         // Si viene mensaje del backend (ej. credenciales inválidas)

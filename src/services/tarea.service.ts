@@ -1,10 +1,10 @@
-import { API_URL_TAREAS } from "../config";
+import { API_URL } from "../config";
 import type { Task } from "../types/task.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data: Task[] }> {
     try {
-        const response = await fetch(`${API_URL_TAREAS}/${id}`, {
+        const response = await fetch(`${API_URL}/task?id_usuario=${id}`, {
             method: "GET",
             credentials: "include",
         });
@@ -24,7 +24,7 @@ export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data:
 
 export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "id"> }): Promise<{ data: Task }> {
     try {
-        const response = await fetch(`${API_URL_TAREAS}/${id}`, {
+        const response = await fetch(`${API_URL}/task`, {
             method: "POST",
 
             credentials: "include",
@@ -32,7 +32,10 @@ export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "i
                 "Content-Type": "application/json",
             },
 
-            body: JSON.stringify(task),
+            body: JSON.stringify({
+                id_usuario: id,
+                ...task,
+            }),
         });
 
         await handleApiError(response);
@@ -50,7 +53,7 @@ export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "i
 export async function EditarTarea({ id, task }: { id: string; task: Omit<Task, "id"> }): Promise<{ data: Task }> {
 
     try {
-        const response = await fetch(`${API_URL_TAREAS}/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             method: "PUT",
             credentials: "include",
             headers: {
@@ -72,7 +75,7 @@ export async function EditarTarea({ id, task }: { id: string; task: Omit<Task, "
 
 export async function EliminarTarea({ id }: { id: string }): Promise<{ message: string }> {
     try {
-        const response = await fetch(`${API_URL_TAREAS}/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             method: "DELETE",
             credentials: "include",
         });
