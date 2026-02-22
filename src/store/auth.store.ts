@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { AuthStore } from "../types/auth.types";
 import { useUserStore } from "./user.store";
+import type { AuthStore } from "../types/auth.types";
 
 export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
@@ -15,7 +15,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         currentUserId: null,
         authError: "Invalid username or password.",
       });
-      return null;
+      return false;
     }
 
     set({
@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       currentUserId: user.id,
       authError: null,
     });
-    return user;
+    return true;
   },
   logout: () => {
     set({

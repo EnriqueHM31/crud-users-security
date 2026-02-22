@@ -1,5 +1,4 @@
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;
-export type UserRole = "admin" | "user";
 
 export interface User {
   id: UUID;
@@ -7,7 +6,6 @@ export interface User {
   name: string;
   password: string;
   email: string;
-  role: UserRole;
 }
 
 export interface CreateUserInput {
@@ -15,7 +13,6 @@ export interface CreateUserInput {
   name: string;
   password: string;
   email: string;
-  role: UserRole;
 }
 
 export interface UpdateUserInput extends Partial<CreateUserInput> {

@@ -1,5 +1,4 @@
 import type { UUID } from "./user.types";
-import type { User } from "./user.types";
 
 export interface LoginCredentials {
   username: string;
@@ -13,7 +12,7 @@ export interface AuthState {
 }
 
 export interface AuthActions {
-  login: (credentials: LoginCredentials) => User | null;
+  login: (credentials: LoginCredentials) => boolean;
   logout: () => void;
   clearAuthError: () => void;
 }
