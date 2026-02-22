@@ -8,13 +8,16 @@ export interface LoginCredentials {
 export interface AuthState {
   isAuthenticated: boolean;
   currentUserId: UUID | null;
-  authError: string | null;
+  isLoading: boolean;
+  error: string | null;
+  successMessage: string | null;
 }
 
 export interface AuthActions {
-  login: (credentials: LoginCredentials) => boolean;
-  logout: () => void;
-  clearAuthError: () => void;
+  login: (credentials: LoginCredentials) => Promise<boolean>;
+  logout: () => Promise<void>;
+  checkSession: () => Promise<void>;
+  clearMessages: () => void;
 }
 
 export type AuthStore = AuthState & AuthActions;

@@ -1,66 +1,106 @@
 import { create } from "zustand";
+import { toast } from "sonner";
+import { CrearUsuario, EditarUsuario, EliminarUsuario, ObtenerUsuarios } from "../services/user.service";
 import type { CreateUserInput, UpdateUserInput, User, UUID } from "../types/user.types";
-
-const generateUUID = (): UUID => crypto.randomUUID() as UUID;
-
-const initialUsers: User[] = [
-  {
-    id: generateUUID(),
-    username: "admin",
-    name: "System Admin",
-    password: "admin123",
-    email: "admin@security.lab",
-  },
-  {
-    id: generateUUID(),
-    username: "analyst",
-    name: "Security Analyst",
-    password: "analyst123",
-    email: "analyst@security.lab",
-  },
-];
 
 interface UserState {
   users: User[];
-  createUser: (payload: CreateUserInput) => User;
-  updateUser: (payload: UpdateUserInput) => void;
-  deleteUser: (id: UUID) => void;
+  isLoading: boolean;
+  error: string | null;
+  successMessage: string | null;
+  fetchUsers: () => Promise<void>;
+  createUser: (payload: CreateUserInput) => Promise<User | null>;
+  updateUser: (payload: UpdateUserInput) => Promise<User | null>;
+  deleteUser: (id: UUID) => Promise<boolean>;
   getUserById: (id: UUID) => User | undefined;
-  findUserByCredentials: (username: string, password: string) => User | undefined;
+  clearMessages: () => void;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
-  users: initialUsers,
-  createUser: (payload) => {
-    const newUser: User = {
-      id: generateUUID(),
-      ...payload,
-    };
-
-    set((state) => ({
-      users: [...state.users, newUser],
-    }));
-
-    return newUser;
+  users: [],
+  isLoading: false,
+  error: null,
+  successMessage: null,
+  fetchUsers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const users = await ObtenerUsuarios();
+      set({ users, error: null });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "No se pudieron obtener los usuarios.";
+      set({ error: errorMessage });
+      toast.error(errorMessage);
+    } finally {
+      set({ isLoading: false });
+    }
   },
-  updateUser: (payload) => {
-    set((state) => ({
-      users: state.users.map((user) =>
-        user.id === payload.id
-          ? {
-            ...user,
-            ...payload,
-          }
-          : user,
-      ),
-    }));
+  createUser: async (payload) => {
+    set({ isLoading: true, error: null, successMessage: null });
+    try {
+      const newUser = await CrearUsuario({ user: payload });
+      const successMessage = "Usuario creado correctamente.";
+      set((state) => ({
+        users: [...state.users, newUser],
+        error: null,
+        successMessage,
+      }));
+      toast.success(successMessage);
+      return newUser;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "No se pudo crear el usuario.";
+      set({ error: errorMessage, successMessage: null });
+      toast.error(errorMessage);
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
   },
-  deleteUser: (id) => {
-    set((state) => ({
-      users: state.users.filter((user) => user.id !== id),
-    }));
+  updateUser: async (payload) => {
+    set({ isLoading: true, error: null, successMessage: null });
+    try {
+      const { id, ...userPayload } = payload;
+      const updatedUser = await EditarUsuario({
+        id,
+        user: userPayload,
+      });
+      const successMessage = "Usuario actualizado correctamente.";
+      set((state) => ({
+        users: state.users.map((user) => (user.id === id ? updatedUser : user)),
+        error: null,
+        successMessage,
+      }));
+      toast.success(successMessage);
+      return updatedUser;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "No se pudo actualizar el usuario.";
+      set({ error: errorMessage, successMessage: null });
+      toast.error(errorMessage);
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  deleteUser: async (id) => {
+    set({ isLoading: true, error: null, successMessage: null });
+    try {
+      const { message } = await EliminarUsuario({ id });
+      const successMessage = message || "Usuario eliminado correctamente.";
+      set((state) => ({
+        users: state.users.filter((user) => user.id !== id),
+        error: null,
+        successMessage,
+      }));
+      toast.success(successMessage);
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "No se pudo eliminar el usuario.";
+      set({ error: errorMessage, successMessage: null });
+      toast.error(errorMessage);
+      return false;
+    } finally {
+      set({ isLoading: false });
+    }
   },
   getUserById: (id) => get().users.find((user) => user.id === id),
-  findUserByCredentials: (username, password) =>
-    get().users.find((user) => user.username === username && user.password === password),
+  clearMessages: () => set({ error: null, successMessage: null }),
 }));
