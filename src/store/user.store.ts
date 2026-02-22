@@ -1,7 +1,9 @@
 import { create } from "zustand";
-import type { CreateUserInput, UpdateUserInput, User, UUID } from "../types/user.types";
+import type { CreateUserInput, UpdateUserInput, User, UserRole, UUID } from "../types/user.types";
 
 const generateUUID = (): UUID => crypto.randomUUID() as UUID;
+const normalizeRole = (role: UserRole | undefined): UserRole =>
+  role === "admin" ? "admin" : "user";
 
 const initialUsers: User[] = [
   {
@@ -10,6 +12,7 @@ const initialUsers: User[] = [
     name: "System Admin",
     password: "admin123",
     email: "admin@security.lab",
+    role: "admin",
   },
   {
     id: generateUUID(),
@@ -17,6 +20,7 @@ const initialUsers: User[] = [
     name: "Security Analyst",
     password: "analyst123",
     email: "analyst@security.lab",
+    role: "user",
   },
 ];
 
@@ -35,6 +39,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     const newUser: User = {
       id: generateUUID(),
       ...payload,
+      role: normalizeRole(payload.role),
     };
 
     set((state) => ({
@@ -50,6 +55,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           ? {
             ...user,
             ...payload,
+            role: normalizeRole(payload.role ?? user.role),
           }
           : user,
       ),
