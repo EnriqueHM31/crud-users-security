@@ -23,25 +23,31 @@ export function DeleteUserDialog({ user, onCancel, onConfirm }: DeleteUserDialog
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
           >
-            <h3 className="mb-3 text-lg font-semibold">Confirm deletion</h3>
+            <h3 className="mb-3 text-lg font-semibold">Confirmacion de eliminación</h3>
             <p className="text-slate-300">
-              Are you sure you want to delete user <strong>{user.username}</strong>?
+              ¿Está seguro de que desea eliminar el usuario <strong>{user.username}</strong>?
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button
+              <motion.button
+                initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                whileHover={{ scale: .90, transition: { duration: 0.2 } }}
                 type="button"
-                className="inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-blue-500"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 font-semibold text-slate-100   hover:border-blue-500 cursor-pointer"
                 onClick={onCancel}
               >
-                Cancel
-              </button>
-              <button
+                Cancelar
+              </motion.button>
+              <motion.button
                 type="button"
-                className="inline-flex items-center justify-center rounded-lg border border-red-900 bg-red-900/30 px-4 py-2 font-semibold text-red-100 transition hover:-translate-y-0.5 hover:border-red-500"
+                initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                whileHover={{ scale: .90, transition: { duration: 0.2 } }}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-900 bg-red-900/30 px-3 py-2 text-sm font-semibold text-red-100  hover:border-red-500 cursor-pointer"
                 onClick={() => onConfirm(user.id)}
               >
-                Delete
-              </button>
+                Eliminar
+              </motion.button>
             </div>
           </motion.div>
         </motion.div>
