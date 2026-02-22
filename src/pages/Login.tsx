@@ -61,13 +61,16 @@ export function Login() {
   return (
     <div className="grid min-h-screen place-items-center bg-[radial-gradient(circle_at_top_right,#12203a,#06080f_45%)] px-4 text-slate-50">
       <motion.div
-        className="w-full max-w-[440px] rounded-xl border border-slate-800 bg-slate-950/80 p-6 shadow-2xl"
+        className="w-full max-w-[460px] rounded-xl border border-slate-800 bg-slate-950/80 p-6 shadow-2xl"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
       >
-        <h1 className="text-3xl font-bold ">Inicia sesion</h1>
-        <p className="mt-1 text-base text-slate-400">Ingresa con tus credenciales para continuar.</p>
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <img src={"/logo.png"} alt="Logo" className="w-16 h-16 rounded-full" />
+          <h1 className="text-3xl font-bold">Inicia sesion</h1>
+        </div>
+        <p className="mb-10 text-base text-slate-400 text-center">Un sistema de prueba de usuarios evalúa la autenticación y los permisos de acceso en un entorno seguro. </p>
         <form className="mt-4 grid gap-3" onSubmit={handleSubmit}>
           <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3">
             <FiUser className="min-w-[18px] text-slate-400" />
@@ -95,7 +98,7 @@ export function Login() {
             initial={{ scale: 0.95, y: 8 }}
             animate={{ scale: 1, y: 0 }}
             whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
-            className="inline-flex w-full items-center justify-center rounded-lg border border-blue-500 bg-blue-500 px-4 py-2.5 font-semibold text-slate-50  hover:-translate-y-0.5 hover:border-blue-600 hover:bg-blue-600 cursor-pointer"
+            className="inline-flex w-full items-center justify-center rounded-lg border border-blue-800 bg-blue-800 px-4 py-2.5 font-semibold text-slate-50  hover:-translate-y-0.5 hover:border-blue-900 hover:bg-blue-900 cursor-pointer"
             type="submit"
           >
             Login
