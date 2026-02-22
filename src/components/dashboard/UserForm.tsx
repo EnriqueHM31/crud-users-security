@@ -1,7 +1,8 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaUser, FaEnvelope, FaLock, FaIdBadge } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { toast } from "sonner";
 import type { CreateUserInput, User } from "../../types/user.types";
 
 interface UserModalProps {
@@ -9,7 +10,7 @@ interface UserModalProps {
   setOpen: (value: boolean) => void;
   mode: "create" | "edit";
   selectedUser?: User;
-  onSubmit: (payload: CreateUserInput) => void;
+  onSubmit: (payload: CreateUserInput) => Promise<boolean>;
 }
 
 const emptyValues: CreateUserInput = {
@@ -26,20 +27,23 @@ export function UserModal({
   selectedUser,
   onSubmit,
 }: UserModalProps) {
-  const [values, setValues] = useState<CreateUserInput>(() => {
+  const [values, setValues] = useState<CreateUserInput>(emptyValues);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  useEffect(() => {
     if (mode === "edit" && selectedUser) {
-      return {
+      setValues({
         username: selectedUser.username,
         name: selectedUser.name,
         password: selectedUser.password,
         email: selectedUser.email,
-      };
+        role: selectedUser.role,
+      });
+      return;
     }
-    return emptyValues;
-  });
-  const [error, setError] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
 
+    setValues(emptyValues);
+  }, [mode, selectedUser, open]);
 
 
   const handleFieldChange =
@@ -51,7 +55,7 @@ export function UserModal({
         }));
       };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const hasEmptyFields = Object.values(values).some(
@@ -59,14 +63,16 @@ export function UserModal({
     );
 
     if (hasEmptyFields) {
-      setError("All fields are required.");
+      toast.error("Todos los campos son obligatorios.");
       return;
     }
 
-    onSubmit(values);
+    const isSuccess = await onSubmit(values);
+    if (!isSuccess) {
+      return;
+    }
     setOpen(false);
     setValues(emptyValues);
-    setError("");
   };
 
   return (
@@ -147,10 +153,6 @@ export function UserModal({
                   {showPassword ? <IoEyeOff /> : <IoEye />}
                 </button>
               </div>
-
-              {error && (
-                <p className="text-sm text-rose-400">{error}</p>
-              )}
 
               <div className="flex gap-3 pt-2">
                 <button
