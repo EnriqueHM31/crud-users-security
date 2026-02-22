@@ -53,6 +53,7 @@ export function UserTable({ users, onEdit, onDelete, handleCreateUser }: UserTab
                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Usuario</th>
                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Nombre </th>
                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Correo electrónico</th>
+                <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Rol</th>
                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Acciones</th>
               </tr>
             </thead>
@@ -62,6 +63,7 @@ export function UserTable({ users, onEdit, onDelete, handleCreateUser }: UserTab
                   <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.username}</td>
                   <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.name}</td>
                   <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.email}</td>
+                  <td className="border-b border-slate-800 px-3 py-3 text-sm capitalize">{user.role}</td>
                   <td className="border-b border-slate-800 px-3 py-3">
                     <div className="flex gap-2">
                       <motion.button
