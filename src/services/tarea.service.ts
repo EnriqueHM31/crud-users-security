@@ -1,10 +1,10 @@
-import { API_URL } from "../config";
+import { API_URL_TASK } from "../config";
 import type { Task } from "../types/task.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data: Task[] }> {
     try {
-        const response = await fetch(`${API_URL}/task?id_usuario=${id}`, {
+        const response = await fetch(`${API_URL_TASK}/task?id_usuario=${id}`, {
             method: "GET",
             credentials: "include",
         });
@@ -24,7 +24,7 @@ export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data:
 
 export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "id"> }): Promise<{ data: Task }> {
     try {
-        const response = await fetch(`${API_URL}/task`, {
+        const response = await fetch(`${API_URL_TASK}/task`, {
             method: "POST",
 
             credentials: "include",
@@ -53,7 +53,7 @@ export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "i
 export async function EditarTarea({ id, task }: { id: string; task: Omit<Task, "id"> }): Promise<{ data: Task }> {
 
     try {
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await fetch(`${API_URL_TASK}/${id}`, {
             method: "PUT",
             credentials: "include",
             headers: {
@@ -75,7 +75,7 @@ export async function EditarTarea({ id, task }: { id: string; task: Omit<Task, "
 
 export async function EliminarTarea({ id }: { id: string }): Promise<{ message: string }> {
     try {
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await fetch(`${API_URL_TASK}/${id}`, {
             method: "DELETE",
             credentials: "include",
         });

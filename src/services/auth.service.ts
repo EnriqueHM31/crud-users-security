@@ -1,11 +1,11 @@
-import { API_URL } from "../config";
+import { API_URL_AUTH } from "../config";
 import type { User } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function Login({ username, password }: { username: string; password: string }): Promise<{ data: Omit<User, "id, password">; message: string }> {
 
     try {
-        const response = await fetch(API_URL + "/login", {
+        const response = await fetch(API_URL_AUTH + "/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export async function Login({ username, password }: { username: string; password
 
 export async function Registrarse({ username, name, password, email, role }: { username: string; name: string; password: string; email: string; role: "admin" | "user" }): Promise<{ data: Omit<User, "id, password">; message: string }> {
     try {
-        const response = await fetch(API_URL + "/user", {
+        const response = await fetch(API_URL_AUTH + "/user", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export async function Registrarse({ username, name, password, email, role }: { u
 
 export async function CerrarSesion(): Promise<{ message: string }> {
     try {
-        const response = await fetch(API_URL + "/logout", {
+        const response = await fetch(API_URL_AUTH + "/logout", {
             method: "POST",
         });
 
@@ -66,7 +66,7 @@ export async function CerrarSesion(): Promise<{ message: string }> {
 export async function CheckSession(): Promise<{ data: boolean }> {
 
     try {
-        const response = await fetch(API_URL + "/verify", {
+        const response = await fetch(API_URL_AUTH + "/verify", {
             method: "POST",
             credentials: "include",
         });
