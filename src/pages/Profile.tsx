@@ -10,6 +10,7 @@ export default function Profile() {
     const user = useAuthenticatedUser();
     const openContraseña = useOpen();
 
+    console.log(user);
     if (!user) {
         return <Navigate to="/login" replace />;
     }
@@ -26,15 +27,15 @@ export default function Profile() {
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                     <div>
                         <span className="text-sm text-slate-400">Username</span>
-                        <p className="mt-1">{user.username}</p>
+                        <p className="mt-1">{user.nombre_usuario}</p>
                     </div>
                     <div>
                         <span className="text-sm text-slate-400">Nombre</span>
-                        <p className="mt-1">{user.name}</p>
+                        <p className="mt-1">{user.nombre_completo}</p>
                     </div>
                     <div className="f">
                         <span className="text-sm text-slate-400">Correo electrónico</span>
-                        <p className="mt-1">{user.email.slice(0, 4)}*************</p>
+                        <p className="mt-1">{user.correo_electronico.slice(0, 4)}*************</p>
                     </div>
 
                     <div>

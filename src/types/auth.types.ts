@@ -1,4 +1,4 @@
-import type { UUID } from "./user.types";
+import type { User } from "./user.types";
 
 export interface LoginCredentials {
   username: string;
@@ -7,7 +7,7 @@ export interface LoginCredentials {
 
 export interface AuthState {
   isAuthenticated: boolean;
-  currentUserId: UUID | null;
+  userAuthenticated: User | null;
   isLoading: boolean;
   error: string | null;
   successMessage: string | null;
@@ -16,7 +16,7 @@ export interface AuthState {
 export interface AuthActions {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => Promise<void>;
-  checkSession: () => Promise<void>;
+  checkSession: () => Promise<boolean>;
   clearMessages: () => void;
 }
 

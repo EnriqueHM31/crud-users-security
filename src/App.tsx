@@ -1,10 +1,18 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import { Login } from "./pages/Login";
 import Profile from "./pages/Profile";
+import { useAuthStore } from "./store/auth.store";
 
 function App() {
+
+    useEffect(() => {
+        useAuthStore.getState().checkSession();
+    }, []);
+
+    
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />

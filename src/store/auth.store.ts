@@ -1,85 +1,115 @@
 import { create } from "zustand";
 import { toast } from "sonner";
-import { CerrarSesion, CheckSession, Login } from "../services/auth.service";
+import { CerrarSesion, Login } from "../services/auth.service";
+import { API_URL_AUTH } from "../config";
 import type { AuthStore } from "../types/auth.types";
 
 export const useAuthStore = create<AuthStore>((set) => ({
+
   isAuthenticated: false,
-  currentUserId: null,
+  userAuthenticated: null,
   isLoading: false,
   error: null,
   successMessage: null,
 
   login: async ({ username, password }) => {
-    set({ isLoading: true, error: null, successMessage: null });
-    try {
-      const { data, message } = await Login({ username, password });
-      const successMessage = message || "Inicio de sesion exitoso.";
+    set({ isLoading: true });
 
+    try {
+
+      const { data, message } = await Login({ username, password });
+
+      console.log({ dataLign: data });
       set({
         isAuthenticated: true,
-        currentUserId: data.id_usuario ?? null,
+        userAuthenticated: data ?? null,
         error: null,
-        successMessage,
+        successMessage: message
       });
-      toast.success(successMessage);
+
+      toast.success(message || "Inicio de sesión exitoso");
+
       return true;
+
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "No se pudo iniciar sesion.";
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al iniciar sesión";
+
       set({
         isAuthenticated: false,
-        currentUserId: null,
-        error: errorMessage,
-        successMessage: null,
+        userAuthenticated: null,
+        error: errorMessage
       });
+
       toast.error(errorMessage);
+
       return false;
+
     } finally {
       set({ isLoading: false });
     }
   },
 
   logout: async () => {
-    set({ isLoading: true, error: null, successMessage: null });
+    set({ isLoading: true });
+
     try {
+
       const { message } = await CerrarSesion();
-      const successMessage = message || "Sesion cerrada correctamente.";
+
       set({
         isAuthenticated: false,
-        currentUserId: null,
-        error: null,
-        successMessage,
+        userAuthenticated: null
       });
-      toast.success(successMessage);
+
+      toast.success(message);
+
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "No se pudo cerrar sesion.";
-      set({ error: errorMessage, successMessage: null });
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al cerrar sesión";
+
       toast.error(errorMessage);
+
     } finally {
       set({ isLoading: false });
     }
   },
+
   checkSession: async () => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
+
     try {
-      const { data } = await CheckSession();
-      set({
-        isAuthenticated: data,
-        error: null,
+
+      const response = await fetch(API_URL_AUTH + "/verify", {
+        method: "POST",
+        credentials: "include"
       });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "No se pudo validar la sesion.";
+
+      const { data } = await response.json();
+
+      set({
+        isAuthenticated: !!data,
+        userAuthenticated: data ?? null
+      });
+
+      return !!data;
+
+    } catch {
       set({
         isAuthenticated: false,
-        currentUserId: null,
-        error: errorMessage,
+        userAuthenticated: null
       });
-      toast.error(errorMessage);
+
+      return false;
     } finally {
       set({ isLoading: false });
     }
   },
+
   clearMessages: () => {
     set({ error: null, successMessage: null });
-  },
+  }
+
 }));

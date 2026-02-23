@@ -36,6 +36,7 @@ export async function Registrarse({ username, name, password, email, role }: { u
     try {
         const response = await fetch(API_URL_AUTH + "/user", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -56,6 +57,7 @@ export async function CerrarSesion(): Promise<{ message: string }> {
     try {
         const response = await fetch(API_URL_AUTH + "/logout", {
             method: "POST",
+            credentials: "include"
         });
 
         await handleApiError(response);

@@ -18,7 +18,5 @@ export const useAuthActions = () =>
 export const useAuthLoading = (): boolean =>
   useAuthStore((state) => state.isLoading);
 
-export const useAuthError = (): string | null => useAuthStore((state) => state.error);
-
 export const useCurrentUserId = () =>
-  useAuthStore((state) => state.currentUserId);
+  useAuthStore((state) => state.userAuthenticated?.id_usuario);
