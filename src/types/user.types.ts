@@ -18,7 +18,7 @@ export interface CreateUserInput {
     name: string;
     password: string;
     email: string;
-    role?: UserRole;
+    rol?: UserRole;
 }
 
 export interface UpdateUserInput extends Partial<CreateUserInput> {
