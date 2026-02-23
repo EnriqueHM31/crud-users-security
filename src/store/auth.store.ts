@@ -18,7 +18,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
       set({
         isAuthenticated: true,
-        currentUserId: data.id ?? null,
+        currentUserId: data.id_usuario ?? null,
         error: null,
         successMessage,
       });

@@ -8,11 +8,11 @@ interface EditUserModalProps {
     open: boolean;
     close: () => void;
     selectedUser: User;
-    onSubmit: (payload: CreateUserInput) => void;
+    onSubmit: (payload: User) => void;
 }
 
 export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModalProps) {
-    const [values, setValues] = useState<CreateUserInput>(selectedUser);
+    const [values, setValues] = useState<User>(selectedUser);
 
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +27,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!values.name.trim() || !values.email.trim()) {
+        if (!values.nombre_completo.trim() || !values.correo_electronico.trim()) {
             setError("All required fields must be completed.");
             return;
         }
@@ -65,7 +65,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                 <FaUser className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
                                     type="text"
-                                    value={values.username}
+                                    value={values.nombre_usuario}
                                     disabled
                                     className="w-full cursor-not-allowed rounded-lg border border-slate-800 bg-slate-800 py-2.5 pr-3 pl-10 text-sm text-slate-400 outline-none"
                                 />
@@ -75,7 +75,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                 <FaIdBadge className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
                                     type="text"
-                                    value={values.name}
+                                    value={values.nombre_completo}
                                     onChange={handleFieldChange("name")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
@@ -85,7 +85,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                 <FaEnvelope className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
                                     type="email"
-                                    value={values.email}
+                                    value={values.correo_electronico}
                                     onChange={handleFieldChange("email")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
@@ -96,7 +96,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Nueva contraseña (opcional)"
-                                    value={values.password}
+                                    value={values.contrasena}
                                     onChange={handleFieldChange("password")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-10 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />

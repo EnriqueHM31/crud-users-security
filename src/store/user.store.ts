@@ -1,7 +1,7 @@
-import { create } from "zustand";
 import { toast } from "sonner";
+import { create } from "zustand";
 import { CrearUsuario, EditarUsuario, EliminarUsuario, ObtenerUsuarios } from "../services/user.service";
-import type { CreateUserInput, UpdateUserInput, User, UUID } from "../types/user.types";
+import type { UpdateUserInput, User, UUID } from "../types/user.types";
 
 interface UserState {
   users: User[];
@@ -9,7 +9,7 @@ interface UserState {
   error: string | null;
   successMessage: string | null;
   fetchUsers: () => Promise<void>;
-  createUser: (payload: CreateUserInput) => Promise<User | null>;
+  createUser: (payload: Omit<User, "id">) => Promise<User | null>;
   updateUser: (payload: UpdateUserInput) => Promise<User | null>;
   deleteUser: (id: UUID) => Promise<boolean>;
   getUserById: (id: UUID) => User | undefined;
@@ -24,7 +24,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   fetchUsers: async () => {
     set({ isLoading: true, error: null });
     try {
-      const users = await ObtenerUsuarios();
+      const { data: users } = await ObtenerUsuarios();
       set({ users, error: null });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "No se pudieron obtener los usuarios.";
@@ -34,10 +34,10 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  createUser: async (payload) => {
+  createUser: async (payload: User) => {
     set({ isLoading: true, error: null, successMessage: null });
     try {
-      const newUser = await CrearUsuario({ user: payload });
+      const { data: newUser } = await CrearUsuario({ user: payload });
       const successMessage = "Usuario creado correctamente.";
       set((state) => ({
         users: [...state.users, newUser],
@@ -59,13 +59,13 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ isLoading: true, error: null, successMessage: null });
     try {
       const { id, ...userPayload } = payload;
-      const updatedUser = await EditarUsuario({
+      const { data: updatedUser } = await EditarUsuario({
         id,
-        user: userPayload,
+        user: userPayload as Omit<User, "id">,
       });
       const successMessage = "Usuario actualizado correctamente.";
       set((state) => ({
-        users: state.users.map((user) => (user.id === id ? updatedUser : user)),
+        users: state.users.map((user) => (user.id_usuario === id ? updatedUser : user)),
         error: null,
         successMessage,
       }));
@@ -86,7 +86,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       const { message } = await EliminarUsuario({ id });
       const successMessage = message || "Usuario eliminado correctamente.";
       set((state) => ({
-        users: state.users.filter((user) => user.id !== id),
+        users: state.users.filter((user) => user.id_usuario !== id),
         error: null,
         successMessage,
       }));
@@ -101,6 +101,6 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  getUserById: (id) => get().users.find((user) => user.id === id),
+  getUserById: (id) => get().users.find((user) => user.id_usuario === id),
   clearMessages: () => set({ error: null, successMessage: null }),
 }));

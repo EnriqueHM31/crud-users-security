@@ -10,14 +10,16 @@ interface UserModalProps {
   setOpen: (value: boolean) => void;
   mode: "create" | "edit";
   selectedUser?: User;
-  onSubmit: (payload: CreateUserInput) => Promise<boolean>;
+  onSubmit: (payload: Omit<User, "id">) => Promise<boolean>;
 }
 
-const emptyValues: CreateUserInput = {
-  username: "",
-  name: "",
-  password: "",
-  email: "",
+const emptyValues: Omit<User, "id_usuario" | "contrasena"> = {
+  nombre_usuario: "",
+  nombre_completo: "",
+  correo_electronico: "",
+  fecha_creacion: "",
+  fecha_actualizacion: "",
+  role: "user",
 };
 
 export function UserModal({
@@ -27,16 +29,17 @@ export function UserModal({
   selectedUser,
   onSubmit,
 }: UserModalProps) {
-  const [values, setValues] = useState<CreateUserInput>(emptyValues);
+  const [values, setValues] = useState<Omit<User, "id_usuario" |"contrasena">>(emptyValues);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     if (mode === "edit" && selectedUser) {
       setValues({
-        username: selectedUser.username,
-        name: selectedUser.name,
-        password: selectedUser.password,
-        email: selectedUser.email,
+        nombre_usuario: selectedUser.nombre_usuario,
+        nombre_completo: selectedUser.nombre_completo,
+        correo_electronico: selectedUser.correo_electronico,
+        fecha_creacion: selectedUser.fecha_creacion,
+        fecha_actualizacion: selectedUser.fecha_actualizacion,
         role: selectedUser.role,
       });
       return;

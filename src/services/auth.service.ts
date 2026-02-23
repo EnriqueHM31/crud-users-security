@@ -2,22 +2,29 @@ import { API_URL_AUTH } from "../config";
 import type { User } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
-export async function Login({ username, password }: { username: string; password: string }): Promise<{ data: Omit<User, "id, password">; message: string }> {
+export async function Login({
+    username,
+    password
+}: {
+    username: string;
+    password: string;
+}): Promise<{ data: Omit<User, "id" | "password">; message: string }> {
 
     try {
         const response = await fetch(API_URL_AUTH + "/login", {
             method: "POST",
+            credentials: "include", // ⭐ MUY IMPORTANTE
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ username, password }),
         });
 
-        console.log({ response });
         await handleApiError(response);
 
         const { data, message } = await response.json();
         return { data, message };
+
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);

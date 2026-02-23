@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
-import type { CreateUserInput, User } from "../../types/user.types";
+import type {  User } from "../../types/user.types";
 import { UserModal } from "./UserForm";
 import { useState } from "react";
 
@@ -10,8 +10,8 @@ interface UserTableProps {
   onDelete: (user: User) => void;
   editingUser?: User;
   onCloseEdit: () => void;
-  handleCreateUser: (payload: CreateUserInput) => Promise<boolean>;
-  handleEditSave: (payload: CreateUserInput) => Promise<boolean>;
+  handleCreateUser: (payload: Omit<User, "id">) => Promise<boolean>;
+  handleEditSave: (payload: Omit<User, "id">) => Promise<boolean>;
 }
 
 export function UserTable({ users, onEdit, onDelete, editingUser, onCloseEdit, handleCreateUser, handleEditSave }: UserTableProps) {
@@ -70,10 +70,10 @@ export function UserTable({ users, onEdit, onDelete, editingUser, onCloseEdit, h
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.username}</td>
-                  <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.name}</td>
-                  <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.email}</td>
+                <tr key={user.id_usuario}>
+                  <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.nombre_usuario}</td>
+                  <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.nombre_completo}</td>
+                  <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.correo_electronico}</td>
                   <td className="border-b border-slate-800 px-3 py-3">
                     <div className="flex gap-2">
                       <motion.button

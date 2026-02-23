@@ -4,7 +4,7 @@ import { DeleteUserDialog } from "../components/dashboard/DeleteUserDialog";
 import { UserTable } from "../components/dashboard/UserTable";
 import { AppLayout } from "../components/layout/AppLayout";
 import { useUserActions, useUsers } from "../hooks/useUsers";
-import type { CreateUserInput, User } from "../types/user.types";
+import type { User } from "../types/user.types";
 
 export default function Dashboard() {
     const users = useUsers();
@@ -12,18 +12,20 @@ export default function Dashboard() {
     const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
     const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
+    console.log(users);
+
     useEffect(() => {
         void fetchUsers();
     }, [fetchUsers]);
 
-    const handleCreateUser = async (payload: CreateUserInput): Promise<boolean> => {
+    const handleCreateUser = async (payload: Omit<User, "id">): Promise<boolean> => {
         const createdUser = await createUser(payload);
         return Boolean(createdUser);
     };
 
-    const handleEditSave = async (payload: CreateUserInput): Promise<boolean> => {
+    const handleEditSave = async (payload: Omit<User, "id">): Promise<boolean> => {
         if (!editingUser) return false;
-        const updatedUser = await updateUser({ id: editingUser.id, ...payload });
+        const updatedUser = await updateUser({ id: editingUser.id_usuario, ...payload });
         if (!updatedUser) {
             return false;
         }
@@ -31,13 +33,13 @@ export default function Dashboard() {
         return true;
     };
 
-    const handleDeleteConfirm = async (userId: User["id"]): Promise<void> => {
+    const handleDeleteConfirm = async (userId: User["id_usuario"]): Promise<void> => {
         const deleted = await deleteUser(userId);
         if (!deleted) {
             return;
         }
         setDeletingUser(null);
-        if (editingUser?.id === userId) {
+        if (editingUser?.id_usuario === userId) {
             setEditingUser(undefined);
         }
     };
