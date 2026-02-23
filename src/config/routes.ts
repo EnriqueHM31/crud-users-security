@@ -19,17 +19,3 @@ export function obtenerRutaPorRolDefecto(rol: UserRole | null | undefined): stri
 
     return RUTA_POR_ROL_DEFECTO[rol] ?? RUTAS.PERFIL;
 }
-
-export const ROLES_PERMITIDOS_POR_RUTA: Record<string, UserRole[]> = {
-    [RUTAS.PANEL_ADMIN]: ["admin"],
-    [RUTAS.PANEL_USUARIO]: ["user"],
-    [RUTAS.PERFIL]: ["admin", "user"],
-};
-
-export function esRolPermitido(ruta: string, rol: UserRole): boolean {
-    const rolesPermitidos = ROLES_PERMITIDOS_POR_RUTA[ruta];
-
-    if (!rolesPermitidos) return false;
-
-    return rolesPermitidos.includes(rol);
-}

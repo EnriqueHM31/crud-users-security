@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { FiLock, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
-import { getDefaultRouteForRole } from "../config/routes";
+import { obtenerRutaPorRolDefecto } from "../config/routes";
 import { useAuthStore } from "../store/auth.store";
 import { toast } from "sonner";
 
@@ -26,18 +26,19 @@ export default function Login() {
     const navigate = useNavigate();
 
     if (isAuthenticated && rol) {
-        return <Navigate to={getDefaultRouteForRole(rol)} replace />;
+        return <Navigate to={obtenerRutaPorRolDefecto(rol)} replace />;
     }
 
-    const handleFieldChange =
-        (field: keyof LoginFormState) =>
-        (event: ChangeEvent<HTMLInputElement>): void => {
-            setForm((previous) => ({
-                ...previous,
-                [field]: event.target.value,
-            }));
-            clearMessages();
-        };
+    const handleFieldChange = (event: ChangeEvent<HTMLInputElement>): void => {
+        const { name, value } = event.target;
+
+        setForm((previous) => ({
+            ...previous,
+            [name]: value,
+        }));
+
+        clearMessages();
+    };
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
@@ -57,7 +58,7 @@ export default function Login() {
         if (isValidLogin) {
             const user = useAuthStore.getState().userAuthenticated;
             const rolPostLogin = user?.rol ?? (user as { role?: "admin" | "user" })?.role ?? null;
-            navigate(getDefaultRouteForRole(rolPostLogin), { replace: true });
+            navigate(obtenerRutaPorRolDefecto(rolPostLogin), { replace: true });
         }
     };
 
@@ -84,9 +85,10 @@ export default function Login() {
                             type="text"
                             autoComplete="username"
                             id="username"
+                            name="username"
                             placeholder="Username"
                             value={form.username}
-                            onChange={handleFieldChange("username")}
+                            onChange={handleFieldChange}
                         />
                     </label>
                     <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3">
@@ -96,9 +98,10 @@ export default function Login() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            name="password"
                             placeholder="Password"
                             value={form.password}
-                            onChange={handleFieldChange("password")}
+                            onChange={handleFieldChange}
                         />
                     </label>
                     <motion.button
