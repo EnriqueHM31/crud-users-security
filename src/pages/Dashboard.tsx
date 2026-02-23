@@ -15,7 +15,7 @@ export default function Dashboard() {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
-    if (user && user.role !== "admin") {
+    if (user && user.rol !== "admin") {
         navigate("/login");
     }
     useEffect(() => {

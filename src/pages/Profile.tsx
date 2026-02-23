@@ -25,7 +25,7 @@ export default function Profile() {
                 transition={{ duration: 0.3 }}
             >
                 <div className="mb-5 flex items-center justify-between">
-                    <h2 className="mb-3 text-xl font-semibold">{user.role === "admin" ? "Perfil de administrador" : "Perfil de usuario"}</h2>
+                    <h2 className="mb-3 text-xl font-semibold">{user.rol === "admin" ? "Perfil de administrador" : "Perfil de usuario"}</h2>
 
                     <div>
                         <motion.button

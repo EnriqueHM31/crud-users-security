@@ -1,23 +1,29 @@
-import { Navigate } from "react-router-dom";
-import { useIsAuthenticated } from "../../hooks/useAuth";
-import { useAuthenticatedUser } from "../../hooks/useUsers";
+import { Navigate, useLocation } from "react-router-dom";
+import { useIsAuthenticated, useUserRole } from "../../hooks/useAuth";
+import { getDefaultRouteForRole, ROUTES } from "../../config/routes";
 import type { ReactNode } from "react";
+import type { UserRole } from "../../types/user.types";
 
 interface ProtectedRouteProps {
     children: ReactNode;
-    allowedRoles?: string[];
+    allowedRoles?: UserRole[];
 }
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     const isAuthenticated = useIsAuthenticated();
-    const user = useAuthenticatedUser();
+    const role = useUserRole();
+    const location = useLocation();
 
-    if (!isAuthenticated || !user) {
-        return <Navigate to="/login" replace />;
+    if (isAuthenticated === undefined || role === undefined) {
+        return null;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
-        return <Navigate to="/" replace />;
+    if (!isAuthenticated) {
+        return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />;
+    }
+
+    if (allowedRoles?.length && role && !allowedRoles.includes(role)) {
+        return <Navigate to={getDefaultRouteForRole(role)} replace />;
     }
 
     return <>{children}</>;

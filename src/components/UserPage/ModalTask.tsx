@@ -69,6 +69,8 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                                 <FaTasks className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
                                     type="text"
+                                    id="title"
+                                    autoComplete="title"
                                     placeholder="Título de la tarea"
                                     value={values.title}
                                     onChange={handleFieldChange("title")}
@@ -80,6 +82,8 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                                 <IoDocumentTextOutline className="absolute top-3 left-3 text-slate-500" />
                                 <textarea
                                     placeholder="Descripción"
+                                    id="description"
+                                    autoComplete="description"
                                     value={values.description}
                                     onChange={handleFieldChange("description")}
                                     rows={4}

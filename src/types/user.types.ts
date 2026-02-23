@@ -9,7 +9,7 @@ export interface User {
     correo_electronico: string;
     fecha_creacion: string;
     fecha_actualizacion: string;
-    role: UserRole;
+    rol: UserRole;
     contrasena: string;
 }
 

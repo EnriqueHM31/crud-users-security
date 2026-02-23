@@ -2,7 +2,9 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { FiLock, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { useAuthActions, useAuthLoading, useIsAuthenticated } from "../hooks/useAuth";
+import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
+import { getDefaultRouteForRole } from "../config/routes";
+import { useAuthStore } from "../store/auth.store";
 import { toast } from "sonner";
 
 interface LoginFormState {
@@ -18,12 +20,13 @@ const initialState: LoginFormState = {
 export default function Login() {
     const [form, setForm] = useState<LoginFormState>(initialState);
     const isAuthenticated = useIsAuthenticated();
+    const rol = useUserRole();
     const { login, clearMessages } = useAuthActions();
     const isLoading = useAuthLoading();
     const navigate = useNavigate();
 
-    if (isAuthenticated) {
-        return <Navigate to="/dashboard" replace />;
+    if (isAuthenticated && rol) {
+        return <Navigate to={getDefaultRouteForRole(rol)} replace />;
     }
 
     const handleFieldChange =
@@ -52,7 +55,9 @@ export default function Login() {
 
         const isValidLogin = await login({ username, password });
         if (isValidLogin) {
-            navigate("/dashboard", { replace: true });
+            const user = useAuthStore.getState().userAuthenticated;
+            const rolPostLogin = user?.rol ?? (user as { role?: "admin" | "user" })?.role ?? null;
+            navigate(getDefaultRouteForRole(rolPostLogin), { replace: true });
         }
     };
 
