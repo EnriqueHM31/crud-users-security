@@ -2,9 +2,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaLock, FaUser, FaUserShield } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { LuShuffle } from "react-icons/lu";
 import { toast } from "sonner";
 import { useOpen } from "../../hooks/useOpen";
 import type { User } from "../../types/user.types";
+import { generarContraseñaSegura } from "../../utils/conversiones";
 
 interface UserModalProps {
     open: boolean;
@@ -116,28 +118,49 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
 
                             <div className="relative">
                                 <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
+
                                 <input
                                     type={openPassword.isOpen ? "text" : "password"}
                                     placeholder="Contraseña"
                                     id="password"
                                     autoComplete="new-password"
                                     value={FormUser.contrasena}
-                                    onChange={handleFieldChange("contrasena")}
-                                    className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-10 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
+                                    readOnly
+                                    className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-20 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
+
+                                {/* Botón generar contraseña */}
                                 <motion.button
+                                    type="button"
                                     initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
                                     animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
                                     whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                     whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                                    onClick={() =>
+                                        handleFieldChange("contrasena")({
+                                            target: { value: generarContraseñaSegura(18) },
+                                        } as ChangeEvent<HTMLInputElement>)
+                                    }
+                                    className="absolute top-1/2 right-10 -translate-y-1/2 cursor-pointer text-blue-400 hover:text-blue-300"
+                                    title="Generar contraseña segura"
+                                >
+                                    <LuShuffle />
+                                </motion.button>
+
+                                {/* Botón mostrar/ocultar */}
+                                <motion.button
                                     type="button"
+                                    title={openPassword.isOpen ? "Ocultar contraseña" : "Mostrar contraseña"}
+                                    initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                                    animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                                    whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                                    whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                     onClick={() => openPassword.toggle()}
                                     className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-slate-400 hover:text-slate-200"
                                 >
-                                    {openPassword.isOpen ? <IoEyeOff /> : <IoEye />}
+                                    {openPassword.isOpen ? <IoEye /> : <IoEyeOff />}
                                 </motion.button>
                             </div>
-
                             <div className="relative">
                                 <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <select
