@@ -28,22 +28,15 @@ export default function Dashboard() {
 
     const handleEditSave = async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">): Promise<void> => {
         if (!editingUser) return;
-        const updatedUser = await updateUser({ id: editingUser.id_usuario, ...payload });
-        if (!updatedUser) {
-            return;
-        }
+        await updateUser(editingUser.id_usuario, payload);
+
         setEditingUser(null);
     };
 
     const handleDeleteConfirm = async (userId: User["id_usuario"]): Promise<void> => {
-        const deleted = await deleteUser(userId);
-        if (!deleted) {
-            return;
-        }
+        await deleteUser(userId);
         setDeletingUser(null);
-        if (editingUser?.id_usuario === userId) {
-            setEditingUser(null);
-        }
+        setEditingUser(null);
     };
 
     return (
