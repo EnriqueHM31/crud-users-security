@@ -12,7 +12,7 @@ interface UserTableProps {
     onDelete: (user: User) => void;
     editingUser?: User | null;
     handleCreateUser: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
-    handleEditSave: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
+    handleEditSave: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => Promise<void>;
 }
 
 export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUser, handleEditSave }: UserTableProps) {
@@ -33,7 +33,19 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
         <>
             <ModalCreate open={openModalCreate.isOpen} close={openModalCreate.close} onSubmit={handleCreateUser} />
 
-            {editingUser && <ModalEdit open={openModalEdit.isOpen} close={handleCloseEdit} selectedUser={editingUser} onSubmit={handleEditSave} />}
+            {editingUser && (
+                <ModalEdit
+                    open={openModalEdit.isOpen}
+                    close={handleCloseEdit}
+                    selectedUser={{
+                        nombre_usuario: editingUser.nombre_usuario,
+                        nombre_completo: editingUser.nombre_completo,
+                        correo_electronico: editingUser.correo_electronico,
+                        rol: editingUser.rol,
+                    }}
+                    onSubmit={handleEditSave}
+                />
+            )}
 
             <motion.section
                 className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-xl"
