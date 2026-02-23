@@ -4,7 +4,7 @@ import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string }> {
     try {
-        const response = await fetch(`${API_URL_USER}/user`);
+        const response = await fetch(`${API_URL_USER}`);
 
         await handleApiError(response);
 
@@ -16,9 +16,15 @@ export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string
     }
 }
 
-export async function EditarUsuario({ id, user }: { id: string; user: Omit<User, "id"> }): Promise<{ data: User }> {
+export async function EditarUsuario({
+    id_usuario,
+    user,
+}: {
+    id_usuario: string;
+    user: Omit<User, "id_usuario | fecha_creacion | fecha_actualizacion">;
+}): Promise<{ data: User; message: string }> {
     try {
-        const response = await fetch(`${API_URL_USER}/user?id_usuario=${id}`, {
+        const response = await fetch(`${API_URL_USER}/${id_usuario}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -28,8 +34,8 @@ export async function EditarUsuario({ id, user }: { id: string; user: Omit<User,
 
         await handleApiError(response);
 
-        const { data } = await response.json();
-        return { data };
+        const { data, message } = await response.json();
+        return { data, message };
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);
@@ -42,7 +48,7 @@ export async function CrearUsuario({
     user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">;
 }): Promise<{ data: User; message: string }> {
     try {
-        const response = await fetch(`${API_URL_USER}/user`, {
+        const response = await fetch(`${API_URL_USER}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -60,10 +66,11 @@ export async function CrearUsuario({
     }
 }
 
-export async function EliminarUsuario({ id }: { id: string }): Promise<{ message: string }> {
+export async function EliminarUsuario({ id_usuario }: { id_usuario: string }): Promise<{ message: string }> {
     try {
-        const response = await fetch(`${API_URL_USER}/user?id_usuario=${id}`, {
+        const response = await fetch(`${API_URL_USER}/${id_usuario}`, {
             method: "DELETE",
+            credentials: "include",
         });
 
         await handleApiError(response);
