@@ -40,6 +40,12 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
         }
 
         onSubmit(userId || "", formTask);
+        setFormTask({ titulo: "", descripcion: "" });
+        close();
+    };
+
+    const handleCloseTask = () => {
+        setFormTask({ titulo: "", descripcion: "" });
         close();
     };
 
@@ -51,7 +57,7 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={() => close()}
+                    onClick={() => handleCloseTask()}
                 >
                     <motion.div
                         className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
@@ -112,7 +118,7 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                                     whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                     whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                     type="button"
-                                    onClick={() => close()}
+                                    onClick={() => handleCloseTask()}
                                     className="flex-1 cursor-pointer rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
                                 >
                                     Cancelar
