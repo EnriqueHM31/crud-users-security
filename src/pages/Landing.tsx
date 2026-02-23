@@ -61,7 +61,6 @@ export default function Landing() {
 
                     {tasks.map((task) => {
                         const fecha = new Date(task.fecha_creacion).toLocaleDateString();
-                        console.log(task);
                         return (
                             <div
                                 key={task.id_tarea}

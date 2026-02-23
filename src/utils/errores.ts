@@ -15,8 +15,6 @@ export async function handleApiError(response: Response): Promise<Response> {
         return response;
     }
 
-    console.log(response);
-
     let errorMessage = "Error inesperado en la solicitud";
     let errorData = null;
 
@@ -50,11 +48,9 @@ export async function handleApiError(response: Response): Promise<Response> {
 }
 
 export function getUserErrorMessage(error: unknown): string {
-    console.log(error);
     if (error instanceof Error) {
         const message = error.message.toLowerCase();
 
-        console.log(message);
         // Error típico cuando el backend no responde
         if (message.includes("failed to fetch")) {
             return "No se pudo conectar con el servidor. Verifica tu conexión o intenta más tarde.";

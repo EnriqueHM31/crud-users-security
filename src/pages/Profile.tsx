@@ -11,7 +11,6 @@ export default function Profile() {
     const user = useAuthenticatedUser();
     const openContraseña = useOpen();
 
-    console.log(user);
     if (!user) {
         return <Navigate to="/login" replace />;
     }
