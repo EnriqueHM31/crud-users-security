@@ -12,7 +12,6 @@ export default function Dashboard() {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
-
     useEffect(() => {
         void fetchUsers();
     }, [fetchUsers]);
@@ -22,7 +21,7 @@ export default function Dashboard() {
     };
 
     const handleEditSave = async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">): Promise<void> => {
-        if (!editingUser) return ;
+        if (!editingUser) return;
         const updatedUser = await updateUser({ id: editingUser.id_usuario, ...payload });
         if (!updatedUser) {
             return;

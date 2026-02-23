@@ -124,7 +124,10 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                             {error && <p className="text-sm text-rose-400">{error}</p>}
 
                             <div className="flex gap-3 pt-2">
-                                <motion.button type="submit" className="flex-1 cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900">
+                                <motion.button
+                                    type="submit"
+                                    className="flex-1 cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
+                                >
                                     Guardar cambios
                                 </motion.button>
 

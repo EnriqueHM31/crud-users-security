@@ -2,25 +2,21 @@ import { API_URL_USER } from "../config";
 import type { User } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
-export async function ObtenerUsuarios(): Promise<{ data: User[], message: string }> {
-
+export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string }> {
     try {
         const response = await fetch(`${API_URL_USER}/user`);
 
         await handleApiError(response);
 
-        const { data, message} = await response.json();
-        return { data, message};
-
+        const { data, message } = await response.json();
+        return { data, message };
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);
     }
 }
 
-
 export async function EditarUsuario({ id, user }: { id: string; user: Omit<User, "id"> }): Promise<{ data: User }> {
-
     try {
         const response = await fetch(`${API_URL_USER}/user?id_usuario=${id}`, {
             method: "PUT",
@@ -32,18 +28,19 @@ export async function EditarUsuario({ id, user }: { id: string; user: Omit<User,
 
         await handleApiError(response);
 
-
         const { data } = await response.json();
         return { data };
-
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);
     }
 }
 
-export async function CrearUsuario({ user }: { user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">}): Promise<{ data: User, message: string }> {
-
+export async function CrearUsuario({
+    user,
+}: {
+    user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">;
+}): Promise<{ data: User; message: string }> {
     try {
         const response = await fetch(`${API_URL_USER}/user`, {
             method: "POST",
@@ -55,10 +52,8 @@ export async function CrearUsuario({ user }: { user: Omit<User, "id_usuario" | "
 
         await handleApiError(response);
 
-        const { data, message} = await response.json();
-        return { data, message};
-
-
+        const { data, message } = await response.json();
+        return { data, message };
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);
@@ -73,10 +68,8 @@ export async function EliminarUsuario({ id }: { id: string }): Promise<{ message
 
         await handleApiError(response);
 
-
         const { message } = await response.json();
         return { message };
-
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);

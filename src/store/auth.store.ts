@@ -5,111 +5,97 @@ import { API_URL_AUTH } from "../config";
 import type { AuthStore } from "../types/auth.types";
 
 export const useAuthStore = create<AuthStore>((set) => ({
+    isAuthenticated: false,
+    userAuthenticated: null,
+    isLoading: false,
+    error: null,
+    successMessage: null,
 
-  isAuthenticated: false,
-  userAuthenticated: null,
-  isLoading: false,
-  error: null,
-  successMessage: null,
+    login: async ({ username, password }) => {
+        set({ isLoading: true });
 
-  login: async ({ username, password }) => {
-    set({ isLoading: true });
+        try {
+            const { data, message } = await Login({ username, password });
 
-    try {
+            console.log({ dataLign: data });
+            set({
+                isAuthenticated: true,
+                userAuthenticated: data ?? null,
+                error: null,
+                successMessage: message,
+            });
 
-      const { data, message } = await Login({ username, password });
+            toast.success(message || "Inicio de sesión exitoso");
 
-      console.log({ dataLign: data });
-      set({
-        isAuthenticated: true,
-        userAuthenticated: data ?? null,
-        error: null,
-        successMessage: message
-      });
+            return true;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Error al iniciar sesión";
 
-      toast.success(message || "Inicio de sesión exitoso");
+            set({
+                isAuthenticated: false,
+                userAuthenticated: null,
+                error: errorMessage,
+            });
 
-      return true;
+            toast.error(errorMessage);
 
-    } catch (error) {
+            return false;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Error al iniciar sesión";
+    logout: async () => {
+        set({ isLoading: true });
 
-      set({
-        isAuthenticated: false,
-        userAuthenticated: null,
-        error: errorMessage
-      });
+        try {
+            const { message } = await CerrarSesion();
 
-      toast.error(errorMessage);
+            set({
+                isAuthenticated: false,
+                userAuthenticated: null,
+            });
 
-      return false;
+            toast.success(message);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Error al cerrar sesión";
 
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+            toast.error(errorMessage);
+        } finally {
+            set({ isLoading: false });
+        }
+    },
 
-  logout: async () => {
-    set({ isLoading: true });
+    checkSession: async () => {
+        set({ isLoading: true });
 
-    try {
+        try {
+            const response = await fetch(API_URL_AUTH + "/verify", {
+                method: "POST",
+                credentials: "include",
+            });
 
-      const { message } = await CerrarSesion();
+            const { data } = await response.json();
 
-      set({
-        isAuthenticated: false,
-        userAuthenticated: null
-      });
+            set({
+                isAuthenticated: !!data,
+                userAuthenticated: data ?? null,
+            });
 
-      toast.success(message);
+            return !!data;
+        } catch {
+            set({
+                isAuthenticated: false,
+                userAuthenticated: null,
+            });
 
-    } catch (error) {
+            return false;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Error al cerrar sesión";
-
-      toast.error(errorMessage);
-
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  checkSession: async () => {
-    set({ isLoading: true });
-
-    try {
-
-      const response = await fetch(API_URL_AUTH + "/verify", {
-        method: "POST",
-        credentials: "include"
-      });
-
-      const { data } = await response.json();
-
-      set({
-        isAuthenticated: !!data,
-        userAuthenticated: data ?? null
-      });
-
-      return !!data;
-
-    } catch {
-      set({
-        isAuthenticated: false,
-        userAuthenticated: null
-      });
-
-      return false;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  clearMessages: () => {
-    set({ error: null, successMessage: null });
-  }
-
+    clearMessages: () => {
+        set({ error: null, successMessage: null });
+    },
 }));

@@ -12,7 +12,12 @@ export default function NotFound() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
-                <motion.h1 className="text-7xl font-extrabold text-blue-500" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <motion.h1
+                    className="text-7xl font-extrabold text-blue-500"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
                     404
                 </motion.h1>
 

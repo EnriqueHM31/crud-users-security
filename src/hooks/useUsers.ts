@@ -6,15 +6,15 @@ import type { User } from "../types/user.types";
 export const useUsers = (): User[] => useUserStore((state) => state.users);
 
 export const useUserActions = () =>
-  useUserStore(
-    useShallow((state) => ({
-      fetchUsers: state.fetchUsers,
-      createUser: state.createUser,
-      updateUser: state.updateUser,
-      deleteUser: state.deleteUser,
-      clearMessages: state.clearMessages,
-    }))
-  );
+    useUserStore(
+        useShallow((state) => ({
+            fetchUsers: state.fetchUsers,
+            createUser: state.createUser,
+            updateUser: state.updateUser,
+            deleteUser: state.deleteUser,
+            clearMessages: state.clearMessages,
+        }))
+    );
 
 export const useUsersLoading = (): boolean => useUserStore((state) => state.isLoading);
 

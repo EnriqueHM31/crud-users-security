@@ -7,12 +7,10 @@ import Profile from "./pages/Profile";
 import { useAuthStore } from "./store/auth.store";
 
 function App() {
-
     useEffect(() => {
         useAuthStore.getState().checkSession();
     }, []);
 
-    
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />

@@ -7,10 +7,10 @@ import type { CreateUserInput, User } from "../../types/user.types";
 interface UserModalProps {
     open: boolean;
     close: () => void;
-    onSubmit: (payload: Omit<User, "id_usuario"  | "fecha_creacion" | "fecha_actualizacion">) => void;
+    onSubmit: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => void;
 }
 
-const emptyValues: Omit<User, "id_usuario"  | "fecha_creacion" | "fecha_actualizacion"> = {
+const emptyValues: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion"> = {
     nombre_usuario: "",
     nombre_completo: "",
     correo_electronico: "",
@@ -73,7 +73,6 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     type="text"
                                     id="username"
                                     autoComplete="username"
-
                                     placeholder="Username"
                                     value={values.nombre_usuario}
                                     onChange={handleFieldChange("username")}
