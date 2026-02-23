@@ -29,17 +29,37 @@ export async function handleApiError(response: Response): Promise<Response> {
     switch (response.status) {
         case 400:
             errorMessage = errorMessage || "Solicitud inválida";
+            if (errorData?.message) {
+                errorMessage = errorData.message;
+                break;
+            }
             break;
         case 401:
+            if (errorData?.message) {
+                errorMessage = errorData.message;
+                break;
+            }
             errorMessage = errorMessage || "No autorizado";
             break;
         case 403:
+            if (errorData?.message) {
+                errorMessage = errorData.message;
+                break;
+            }
             errorMessage = errorMessage || "Acceso prohibido";
             break;
         case 404:
+            if (errorData?.message) {
+                errorMessage = errorData.message;
+                break;
+            }
             errorMessage = errorMessage || "Recurso no encontrado";
             break;
         case 500:
+            if (errorData?.message) {
+                errorMessage = errorData.message;
+                break;
+            }
             errorMessage = "Error interno del servidor";
             break;
     }
