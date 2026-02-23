@@ -28,10 +28,13 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
         openModalEdit.close();
         onEdit(null);
     };
+
     return (
         <>
             <ModalCreate open={openModalCreate.isOpen} close={openModalCreate.close} onSubmit={handleCreateUser} />
+
             {editingUser && <ModalEdit open={openModalEdit.isOpen} close={handleCloseEdit} selectedUser={editingUser} onSubmit={handleEditSave} />}
+
             <motion.section
                 className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-xl"
                 initial={{ opacity: 0, y: 10 }}
