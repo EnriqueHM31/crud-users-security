@@ -9,7 +9,7 @@ interface UserState {
   error: string | null;
   successMessage: string | null;
   fetchUsers: () => Promise<void>;
-  createUser: (payload: Omit<User, "id">) => Promise<User | null>;
+  createUser: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
   updateUser: (payload: UpdateUserInput) => Promise<User | null>;
   deleteUser: (id: UUID) => Promise<boolean>;
   getUserById: (id: UUID) => User | undefined;
@@ -21,6 +21,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   isLoading: false,
   error: null,
   successMessage: null,
+
   fetchUsers: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -34,7 +35,8 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  createUser: async (payload: User) => {
+
+  createUser: async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => {
     set({ isLoading: true, error: null, successMessage: null });
     try {
       const { data: newUser } = await CrearUsuario({ user: payload });
@@ -45,12 +47,10 @@ export const useUserStore = create<UserState>((set, get) => ({
         successMessage,
       }));
       toast.success(successMessage);
-      return newUser;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "No se pudo crear el usuario.";
       set({ error: errorMessage, successMessage: null });
       toast.error(errorMessage);
-      return null;
     } finally {
       set({ isLoading: false });
     }

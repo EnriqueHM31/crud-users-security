@@ -9,28 +9,25 @@ import type { User } from "../types/user.types";
 export default function Dashboard() {
     const users = useUsers();
     const { fetchUsers, createUser, updateUser, deleteUser } = useUserActions();
-    const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
     const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
-    console.log(users);
 
     useEffect(() => {
         void fetchUsers();
     }, [fetchUsers]);
 
-    const handleCreateUser = async (payload: Omit<User, "id">): Promise<boolean> => {
-        const createdUser = await createUser(payload);
-        return Boolean(createdUser);
+    const handleCreateUser = async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">): Promise<void> => {
+        await createUser(payload);
     };
 
-    const handleEditSave = async (payload: Omit<User, "id">): Promise<boolean> => {
-        if (!editingUser) return false;
+    const handleEditSave = async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">): Promise<void> => {
+        if (!editingUser) return ;
         const updatedUser = await updateUser({ id: editingUser.id_usuario, ...payload });
         if (!updatedUser) {
-            return false;
+            return;
         }
-        setEditingUser(undefined);
-        return true;
+        setEditingUser(null);
     };
 
     const handleDeleteConfirm = async (userId: User["id_usuario"]): Promise<void> => {
@@ -40,7 +37,7 @@ export default function Dashboard() {
         }
         setDeletingUser(null);
         if (editingUser?.id_usuario === userId) {
-            setEditingUser(undefined);
+            setEditingUser(null);
         }
     };
 
@@ -52,7 +49,6 @@ export default function Dashboard() {
                     onEdit={setEditingUser}
                     onDelete={setDeletingUser}
                     editingUser={editingUser}
-                    onCloseEdit={() => setEditingUser(undefined)}
                     handleCreateUser={handleCreateUser}
                     handleEditSave={handleEditSave}
                 />
