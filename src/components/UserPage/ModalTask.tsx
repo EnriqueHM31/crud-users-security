@@ -3,26 +3,29 @@ import { useState, type ChangeEvent } from "react";
 import { FaTasks } from "react-icons/fa";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
+import type { Task } from "../../types/task.types";
+import { useAuthenticatedUser } from "../../hooks/useUsers";
 
 interface CreateTaskInput {
-    title: string;
-    description: string;
+    titulo: string;
+    descripcion: string;
 }
 
 interface CreateTaskModalProps {
     open: boolean;
     close: () => void;
-    onSubmit: (payload: CreateTaskInput) => void;
+    onSubmit: (userId: string, task: Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">) => void;
 }
 
 export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps) {
-    const [values, setValues] = useState<CreateTaskInput>({
-        title: "",
-        description: "",
+    const userId = useAuthenticatedUser()?.id_usuario;
+    const [formTask, setFormTask] = useState<Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">>({
+        titulo: "",
+        descripcion: "",
     });
 
     const handleFieldChange = (field: keyof CreateTaskInput) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setValues((prev) => ({
+        setFormTask((prev) => ({
             ...prev,
             [field]: event.target.value,
         }));
@@ -31,12 +34,12 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!values.title.trim()) {
+        if (!formTask.titulo.trim()) {
             toast.error("El título es obligatorio.");
             return;
         }
 
-        onSubmit(values);
+        onSubmit(userId || "", formTask);
         close();
     };
 
@@ -72,8 +75,8 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                                     id="title"
                                     autoComplete="title"
                                     placeholder="Título de la tarea"
-                                    value={values.title}
-                                    onChange={handleFieldChange("title")}
+                                    value={formTask.titulo}
+                                    onChange={handleFieldChange("titulo")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
                             </div>
@@ -84,8 +87,8 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                                     placeholder="Descripción"
                                     id="description"
                                     autoComplete="description"
-                                    value={values.description}
-                                    onChange={handleFieldChange("description")}
+                                    value={formTask.descripcion}
+                                    onChange={handleFieldChange("descripcion")}
                                     rows={4}
                                     className="w-full resize-none rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />

@@ -4,7 +4,7 @@ import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data: Task[] }> {
     try {
-        const response = await fetch(`${API_URL_TASK}/task?id_usuario=${id}`, {
+        const response = await fetch(`${API_URL_TASK}/user/${id}`, {
             method: "GET",
             credentials: "include",
         });
@@ -19,11 +19,16 @@ export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data:
     }
 }
 
-export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "id"> }): Promise<{ data: Task }> {
+export async function CrearTarea({
+    id,
+    task,
+}: {
+    id: string;
+    task: Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">;
+}): Promise<{ data: Task }> {
     try {
-        const response = await fetch(`${API_URL_TASK}/task`, {
+        const response = await fetch(`${API_URL_TASK}/`, {
             method: "POST",
-
             credentials: "include",
             headers: {
                 "Content-Type": "application/json",
@@ -45,15 +50,15 @@ export async function CrearTarea({ id, task }: { id: string; task: Omit<Task, "i
     }
 }
 
-export async function EditarTarea({ id, task }: { id: string; task: Omit<Task, "id"> }): Promise<{ data: Task }> {
+export async function EditarTarea({ id_tarea, completado }: { id_tarea: string; completado: boolean }): Promise<{ data: Task }> {
     try {
-        const response = await fetch(`${API_URL_TASK}/${id}`, {
+        const response = await fetch(`${API_URL_TASK}/${id_tarea}`, {
             method: "PUT",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(task),
+            body: JSON.stringify({ completado }),
         });
 
         await handleApiError(response);

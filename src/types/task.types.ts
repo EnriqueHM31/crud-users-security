@@ -1,8 +1,10 @@
 export interface Task {
-    id: string;
-    title: string;
-    description: string;
-    completed: boolean;
+    id_tarea: string;
+    titulo: string;
+    descripcion: string;
+    id_usuario: string;
+    completada: number;
+    fecha_creacion: string;
 }
 
 export interface CreateTaskInput {

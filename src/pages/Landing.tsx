@@ -1,47 +1,35 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../components/layout/AppLayout";
-import { useAuthenticatedUser } from "../hooks/useUsers";
 import { CreateTaskModal } from "../components/UserPage/ModalTask";
-
-interface Task {
-    id: string;
-    title: string;
-    description: string;
-    completed: boolean;
-}
+import { useOpen } from "../hooks/useOpen";
+import { useAuthenticatedUser } from "../hooks/useUsers";
+import { useTaskStore } from "../store/task.store";
+import { ModalDeleteTask } from "../components/UserPage/ModalDeleteTask";
 
 export default function Landing() {
     const user = useAuthenticatedUser();
+    const { fetchTasks, tasks, createTask, updateTask, deleteTask } = useTaskStore();
 
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
+    const openModalCreateTask = useOpen();
+    const openModalDeleteTask = useOpen();
+
+    useEffect(() => {
+        if (!user) return;
+        void fetchTasks(user.id_usuario);
+    }, [fetchTasks, user]);
 
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
-    const handleCreateTask = () => {
-        if (!title.trim()) return;
-
-        const newTask: Task = {
-            id: crypto.randomUUID(),
-            title,
-            description,
-            completed: false,
-        };
-
-        setTasks((prev) => [...prev, newTask]);
-        setTitle("");
-        setDescription("");
-        setIsOpen(false);
+    const handleSubmitCompleteTask = async ({ id_tarea }: { id_tarea: string }) => {
+        await updateTask(id_tarea, true);
     };
 
-    const toggleTask = (id: string) => {
-        setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)));
+    const handleSubmitDeleteTask = async ({ id_tarea }: { id_tarea: string }) => {
+        await deleteTask(id_tarea);
     };
 
     return (
@@ -60,7 +48,7 @@ export default function Landing() {
                         animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
                         whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                         whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => openModalCreateTask.open()}
                         className="cursor-pointer rounded-lg bg-blue-800 px-4 py-2 text-sm font-medium hover:bg-indigo-900"
                     >
                         Agregar tarea
@@ -68,23 +56,88 @@ export default function Landing() {
                 </div>
 
                 {/* Lista de tareas */}
-                <div className="space-y-4">
+                <div className="flex flex-col gap-5">
                     {tasks.length === 0 && <p className="text-sm text-slate-400">No hay tareas registradas.</p>}
 
-                    {tasks.map((task) => (
-                        <div key={task.id} className="flex items-start justify-between rounded-lg border border-slate-800 bg-slate-900 p-4">
-                            <div>
-                                <h3 className={`font-semibold ${task.completed ? "text-slate-500 line-through" : ""}`}>{task.title}</h3>
-                                <p className="text-sm text-slate-400">{task.description}</p>
-                            </div>
+                    {tasks.map((task) => {
+                        const fecha = new Date(task.fecha_creacion).toLocaleDateString();
+                        console.log(task);
+                        return (
+                            <div
+                                key={task.id_tarea}
+                                className="group relative flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-900/80 p-5 shadow-sm transition-all duration-300 hover:border-slate-700 hover:bg-slate-900"
+                            >
+                                {/* Header */}
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3
+                                            className={`text-lg font-semibold transition-all ${task.completada ? "text-slate-500 line-through" : "text-white"}`}
+                                        >
+                                            {task.titulo}
+                                        </h3>
 
-                            <input type="checkbox" checked={task.completed} onChange={() => toggleTask(task.id)} className="mt-1 h-5 w-5" />
-                        </div>
-                    ))}
+                                        <p className="mt-1 text-sm text-slate-400">{task.descripcion}</p>
+                                    </div>
+
+                                    <span
+                                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                            task.completada ? "bg-emerald-900/40 text-emerald-400" : "bg-yellow-900/40 text-yellow-400"
+                                        }`}
+                                    >
+                                        {task.completada ? "Completada" : "Pendiente"}
+                                    </span>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex items-center justify-between border-t border-slate-800 pt-3">
+                                    <span className="text-xs text-slate-500">Creada el {fecha}</span>
+
+                                    <div className="flex items-center gap-3">
+                                        <motion.button
+                                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                                            onClick={() =>
+                                                handleSubmitCompleteTask({
+                                                    id_tarea: task.id_tarea,
+                                                })
+                                            }
+                                            disabled={Boolean(task.completada)}
+                                            className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${
+                                                task.completada
+                                                    ? "cursor-not-allowed bg-slate-800 text-slate-500"
+                                                    : "bg-blue-800 text-white hover:bg-blue-900 active:scale-95"
+                                            }`}
+                                        >
+                                            {task.completada ? "Tarea completada" : "Completar tarea"}
+                                        </motion.button>
+
+                                        <motion.button
+                                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                                            onClick={() => openModalDeleteTask.open()}
+                                            className="cursor-pointer rounded-lg bg-red-800 px-4 py-2 text-sm font-medium text-white hover:bg-red-900"
+                                        >
+                                            Eliminar
+                                        </motion.button>
+                                    </div>
+                                </div>
+                                <ModalDeleteTask
+                                    open={openModalDeleteTask.isOpen}
+                                    close={openModalDeleteTask.close}
+                                    onDelete={handleSubmitDeleteTask}
+                                    task={task}
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
             </motion.section>
 
-            <CreateTaskModal open={isOpen} close={() => setIsOpen(false)} onSubmit={handleCreateTask} />
+            <CreateTaskModal open={openModalCreateTask.isOpen} close={openModalCreateTask.close} onSubmit={createTask} />
         </AppLayout>
     );
 }
