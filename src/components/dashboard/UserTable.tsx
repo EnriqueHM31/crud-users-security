@@ -4,6 +4,7 @@ import type { User } from "../../types/user.types";
 import { ModalCreate } from "./ModalCreate";
 import { ModalEdit } from "./ModalEdit";
 import { useOpen } from "../../hooks/useOpen";
+import { formatearFechaMexico } from "../../utils/conversiones";
 
 interface UserTableProps {
     users: User[];
@@ -59,6 +60,8 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Usuario</th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Nombre </th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Correo electrónico</th>
+                                <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Rol</th>
+                                <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Fecha de creación</th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Acciones</th>
                             </tr>
                         </thead>
@@ -68,6 +71,8 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.nombre_usuario}</td>
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.nombre_completo}</td>
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.correo_electronico}</td>
+                                    <td className="border-b border-slate-800 px-3 py-3 text-sm capitalize">{user.rol}</td>
+                                    <td className="border-b border-slate-800 px-3 py-3 text-sm">{formatearFechaMexico(user.fecha_creacion)}</td>
                                     <td className="border-b border-slate-800 px-3 py-3">
                                         <div className="flex gap-2">
                                             <motion.button
