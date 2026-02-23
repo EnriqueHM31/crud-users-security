@@ -2,7 +2,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaLock, FaUser, FaUserShield } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-import type { CreateUserInput, User } from "../../types/user.types";
+import { toast } from "sonner";
+import { useOpen } from "../../hooks/useOpen";
+import type { User } from "../../types/user.types";
 
 interface UserModalProps {
     open: boolean;
@@ -10,38 +12,44 @@ interface UserModalProps {
     onSubmit: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => void;
 }
 
-const emptyValues: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion"> = {
+const emptyFormUser: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion"> = {
     nombre_usuario: "",
     nombre_completo: "",
     correo_electronico: "",
     contrasena: "",
-    role: "user",
+    rol: "user",
 };
 
 export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
-    const [values, setValues] = useState<Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">>(emptyValues);
-    const [error, setError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+    const [FormUser, setFormUser] = useState<Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">>(emptyFormUser);
 
-    const handleFieldChange = (field: keyof CreateUserInput) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setValues((prev) => ({
-            ...prev,
-            [field]: event.target.value,
-        }));
-    };
+    const openPassword = useOpen();
+
+    const handleFieldChange =
+        (field: keyof Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+            setFormUser((prev) => ({
+                ...prev,
+                [field]: event.target.value,
+            }));
+        };
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!values.nombre_usuario.trim() || !values.nombre_completo.trim() || !values.correo_electronico.trim() || !values.contrasena.trim()) {
-            setError("All required fields must be completed.");
+        if (!FormUser.nombre_usuario.trim() || !FormUser.nombre_completo.trim() || !FormUser.correo_electronico.trim() || !FormUser.contrasena.trim()) {
+            toast.error("Todos los campos son obligatorios.");
             return;
         }
 
-        onSubmit(values);
+        onSubmit(FormUser);
+        setFormUser(emptyFormUser);
         close();
     };
 
+    const handleCloseCreateUser = () => {
+        setFormUser(emptyFormUser);
+        close();
+    };
     return (
         <AnimatePresence>
             {open && (
@@ -74,8 +82,8 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     id="username"
                                     autoComplete="username"
                                     placeholder="Username"
-                                    value={values.nombre_usuario}
-                                    onChange={handleFieldChange("username")}
+                                    value={FormUser.nombre_usuario}
+                                    onChange={handleFieldChange("nombre_usuario")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
                             </div>
@@ -87,8 +95,8 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     placeholder="Nombre completo"
                                     id="name"
                                     autoComplete="name"
-                                    value={values.nombre_completo}
-                                    onChange={handleFieldChange("name")}
+                                    value={FormUser.nombre_completo}
+                                    onChange={handleFieldChange("nombre_completo")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
                             </div>
@@ -100,8 +108,8 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     placeholder="Correo electrónico"
                                     id="email"
                                     autoComplete="email"
-                                    value={values.correo_electronico}
-                                    onChange={handleFieldChange("email")}
+                                    value={FormUser.correo_electronico}
+                                    onChange={handleFieldChange("correo_electronico")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
                             </div>
@@ -109,12 +117,12 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                             <div className="relative">
                                 <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    type={showPassword ? "text" : "password"}
+                                    type={openPassword.isOpen ? "text" : "password"}
                                     placeholder="Contraseña"
                                     id="password"
                                     autoComplete="new-password"
-                                    value={values.contrasena}
-                                    onChange={handleFieldChange("password")}
+                                    value={FormUser.contrasena}
+                                    onChange={handleFieldChange("contrasena")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-10 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
                                 <motion.button
@@ -123,28 +131,26 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                     whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                     type="button"
-                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    onClick={() => openPassword.toggle()}
                                     className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-slate-400 hover:text-slate-200"
                                 >
-                                    {showPassword ? <IoEyeOff /> : <IoEye />}
+                                    {openPassword.isOpen ? <IoEyeOff /> : <IoEye />}
                                 </motion.button>
                             </div>
 
                             <div className="relative">
                                 <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <select
-                                    value={values.role}
+                                    value={FormUser.rol}
                                     id="role"
                                     autoComplete="role"
-                                    onChange={handleFieldChange("role")}
+                                    onChange={handleFieldChange("rol")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 >
                                     <option value="admin">Admin</option>
                                     <option value="user">User</option>
                                 </select>
                             </div>
-
-                            {error && <p className="text-sm text-rose-400">{error}</p>}
 
                             <div className="flex gap-3 pt-2">
                                 <motion.button
@@ -164,7 +170,7 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                     whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                     type="button"
-                                    onClick={() => close()}
+                                    onClick={() => handleCloseCreateUser()}
                                     className="flex-1 cursor-pointer rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
                                 >
                                     Cancelar
