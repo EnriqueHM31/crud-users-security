@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 import { useAuthStore } from "./store/auth.store";
 import { useIsAuthenticated, useUserRole } from "./hooks/useAuth";
-import { getDefaultRouteForRole, ROUTES } from "./config/routes";
+import { obtenerRutaPorRolDefecto, RUTAS } from "./config/routes";
 
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -16,10 +16,10 @@ export function HomeRedirect() {
     const rol = useUserRole();
 
     if (!isAuthenticated) {
-        return <Navigate to={ROUTES.LOGIN} replace />;
+        return <Navigate to={RUTAS.LOGIN} replace />;
     }
 
-    return <Navigate to={getDefaultRouteForRole(rol)} replace />;
+    return <Navigate to={obtenerRutaPorRolDefecto(rol)} replace />;
 }
 
 function App() {
@@ -39,11 +39,11 @@ function App() {
     return (
         <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">Cargando...</div>}>
             <Routes>
-                <Route path={ROUTES.HOME} element={<HomeRedirect />} />
-                <Route path={ROUTES.LOGIN} element={<Login />} />
+                <Route path={RUTAS.INICIO} element={<HomeRedirect />} />
+                <Route path={RUTAS.LOGIN} element={<Login />} />
 
                 <Route
-                    path={ROUTES.DASHBOARD}
+                    path={RUTAS.PANEL_ADMIN}
                     element={
                         <ProtectedRoute allowedRoles={["admin"]}>
                             <Dashboard />
@@ -52,7 +52,7 @@ function App() {
                 />
 
                 <Route
-                    path={ROUTES.LANDING}
+                    path={RUTAS.PANEL_USUARIO}
                     element={
                         <ProtectedRoute allowedRoles={["user"]}>
                             <Landing />
@@ -61,7 +61,7 @@ function App() {
                 />
 
                 <Route
-                    path={ROUTES.PROFILE}
+                    path={RUTAS.PERFIL}
                     element={
                         <ProtectedRoute allowedRoles={["admin", "user"]}>
                             <Profile />
@@ -69,7 +69,7 @@ function App() {
                     }
                 />
 
-                <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
+                <Route path={RUTAS.NO_ENCONTRADO} element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </Suspense>
