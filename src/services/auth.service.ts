@@ -6,7 +6,7 @@ export async function Login({ username, password }: { username: string; password
     try {
         const response = await fetch(API_URL_AUTH + "/login", {
             method: "POST",
-            credentials: "include", // ⭐ MUY IMPORTANTE
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -72,7 +72,7 @@ export async function CerrarSesion(): Promise<{ message: string }> {
     }
 }
 
-export async function CheckSession(): Promise<{ data: boolean }> {
+export async function CheckSession(): Promise<{ data: User }> {
     try {
         const response = await fetch(API_URL_AUTH + "/verify", {
             method: "POST",

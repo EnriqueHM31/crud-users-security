@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import { ModalContraseña } from "../components/UserPage/ModalContraseña";
 import { useOpen } from "../hooks/useOpen";
+import { formatearFechaMexico } from "../utils/conversiones";
 
 export default function Profile() {
     const user = useAuthenticatedUser();
@@ -23,25 +24,8 @@ export default function Profile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
             >
-                <h2 className="mb-3 text-xl font-semibold">{user.role === "admin" ? "Perfil de administrador" : "Perfil de usuario"}</h2>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                    <div>
-                        <span className="text-sm text-slate-400">Username</span>
-                        <p className="mt-1">{user.nombre_usuario}</p>
-                    </div>
-                    <div>
-                        <span className="text-sm text-slate-400">Nombre</span>
-                        <p className="mt-1">{user.nombre_completo}</p>
-                    </div>
-                    <div className="f">
-                        <span className="text-sm text-slate-400">Correo electrónico</span>
-                        <p className="mt-1">{user.correo_electronico.slice(0, 4)}*************</p>
-                    </div>
-
-                    <div>
-                        <span className="text-sm text-slate-400">Contraseña</span>
-                        <p className="mt-1">********</p>
-                    </div>
+                <div className="mb-5 flex items-center justify-between">
+                    <h2 className="mb-3 text-xl font-semibold">{user.role === "admin" ? "Perfil de administrador" : "Perfil de usuario"}</h2>
 
                     <div>
                         <motion.button
@@ -56,6 +40,29 @@ export default function Profile() {
                             <FiLock />
                             Cambiar contraseña
                         </motion.button>
+                    </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                        <span className="text-sm text-slate-400">Username</span>
+                        <p className="mt-1">{user.nombre_usuario}</p>
+                    </div>
+                    <div>
+                        <span className="text-sm text-slate-400">Nombre</span>
+                        <p className="mt-1">{user.nombre_completo}</p>
+                    </div>
+                    <div className="f">
+                        <span className="text-sm text-slate-400">Correo electrónico</span>
+                        <p className="mt-1">{user.correo_electronico.slice(0, 4)}*************</p>
+                    </div>
+                    <div>
+                        <span className="text-sm text-slate-400">Contraseña</span>
+                        <p className="mt-1">********</p>
+                    </div>
+
+                    <div>
+                        <span className="text-sm text-slate-400">Fecha de creación</span>
+                        <p className="mt-1">{formatearFechaMexico(user.fecha_creacion)}</p>
                     </div>
                 </div>
             </motion.section>

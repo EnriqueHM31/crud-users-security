@@ -15,7 +15,7 @@ const initialState: LoginFormState = {
     password: "",
 };
 
-export function Login() {
+export default function Login() {
     const [form, setForm] = useState<LoginFormState>(initialState);
     const isAuthenticated = useIsAuthenticated();
     const { login, clearMessages } = useAuthActions();

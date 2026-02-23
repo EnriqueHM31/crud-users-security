@@ -3,15 +3,21 @@ import { useEffect, useState } from "react";
 import { DeleteUserDialog } from "../components/dashboard/DeleteUserDialog";
 import { UserTable } from "../components/dashboard/UserTable";
 import { AppLayout } from "../components/layout/AppLayout";
-import { useUserActions, useUsers } from "../hooks/useUsers";
+import { useAuthenticatedUser, useUserActions, useUsers } from "../hooks/useUsers";
 import type { User } from "../types/user.types";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const users = useUsers();
+    const user = useAuthenticatedUser();
+    const navigate = useNavigate();
     const { fetchUsers, createUser, updateUser, deleteUser } = useUserActions();
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
+    if (user && user.role !== "admin") {
+        navigate("/login");
+    }
     useEffect(() => {
         void fetchUsers();
     }, [fetchUsers]);
