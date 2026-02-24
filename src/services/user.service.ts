@@ -4,7 +4,12 @@ import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string }> {
     try {
-        const response = await fetch(`${API_URL_USER}`);
+        const response = await fetch(`${API_URL_USER}`, {
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
         await handleApiError(response);
 
@@ -26,6 +31,7 @@ export async function EditarUsuario({
     try {
         const response = await fetch(`${API_URL_USER}/${id_usuario}`, {
             method: "PUT",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -50,6 +56,7 @@ export async function CrearUsuario({
     try {
         const response = await fetch(`${API_URL_USER}`, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
