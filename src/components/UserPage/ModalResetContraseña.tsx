@@ -23,7 +23,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
 
     const handleSendCode = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user.email.trim()) {
+        if (!user.correo_electronico.trim()) {
             setError("Debes ingresar tu correo.");
             return;
         }
@@ -115,7 +115,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
 
                                 <p className="mt-2 mb-5 text-base text-slate-400">
                                     Se enviará un código de verificación al correo vinculado a tu cuenta
-                                    <b> {user.email.slice(0, 4)}*************.</b>
+                                    <b> {user.correo_electronico.slice(0, 4)}*************.</b>
                                 </p>
 
                                 <form className="grid gap-4" onSubmit={handleSendCode}>
