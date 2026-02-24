@@ -101,8 +101,4 @@ export const useAuthStore = create<AuthStore>((set) => ({
             set({ isLoading: false });
         }
     },
-
-    clearMessages: () => {
-        set({ error: null, successMessage: null });
-    },
 }));
