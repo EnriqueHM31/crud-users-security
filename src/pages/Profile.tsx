@@ -6,14 +6,20 @@ import { FiLock } from "react-icons/fi";
 import { ModalContraseña } from "../components/UserPage/ModalContraseña";
 import { useOpen } from "../hooks/useOpen";
 import { formatearFechaMexico } from "../utils/conversiones";
+import { usePasswordActions } from "../hooks/usePassword";
 
 export default function Profile() {
     const user = useAuthenticatedUser();
     const openContraseña = useOpen();
+    const { changePassword } = usePasswordActions();
 
     if (!user) {
         return <Navigate to="/login" replace />;
     }
+
+    const handleSubmitChangePassword = ({ currentPassword, newPassword, id_usuario }: { currentPassword: string; newPassword: string; id_usuario: string }) => {
+        changePassword(currentPassword, newPassword, id_usuario);
+    };
 
     return (
         <AppLayout title="Profile">
@@ -66,7 +72,7 @@ export default function Profile() {
                 </div>
             </motion.section>
 
-            <ModalContraseña open={openContraseña.isOpen} close={openContraseña.close} onSubmit={openContraseña.open} />
+            <ModalContraseña open={openContraseña.isOpen} close={openContraseña.close} onSubmit={handleSubmitChangePassword} />
         </AppLayout>
     );
 }
