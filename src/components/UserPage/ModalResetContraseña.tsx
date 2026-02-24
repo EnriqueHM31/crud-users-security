@@ -183,6 +183,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                         {step === "verify" && (
                             <ModalVerificar
                                 otp={otp}
+                                isLoading={isLoading}
                                 handleOtpChange={handleOtpChange}
                                 handleValidateCode={handleValidateCode}
                                 secondsLeft={secondsLeft}
@@ -191,7 +192,12 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                         )}
 
                         {step === "reset" && (
-                            <ModalReset changePassword={changePassword} handleChangePassword={handleChangePassword} handleSubmit={handleResetPassword} />
+                            <ModalReset
+                                changePassword={changePassword}
+                                handleChangePassword={handleChangePassword}
+                                handleSubmit={handleResetPassword}
+                                isLoading={isLoading}
+                            />
                         )}
                     </motion.div>
                 </motion.div>
