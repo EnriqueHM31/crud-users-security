@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { toast } from "sonner";
-import { resetearContrasena, CambiarContrasena } from "../services/password.service";
+import { resetearContrasena, CambiarContrasena, RequestResetEmail } from "../services/password.service";
 
 interface PasswordState {
     isLoading: boolean;
@@ -9,6 +9,7 @@ interface PasswordState {
 
     editPasswordUser: (id_usuario: string, password: string) => Promise<void>;
     changePassword: (currentPassword: string, newPassword: string, id_usuario: string) => Promise<void>;
+    requestResetEmail: (email: string) => Promise<void>;
 }
 
 export const usePasswordStore = create<PasswordState>((set) => ({
@@ -65,6 +66,30 @@ export const usePasswordStore = create<PasswordState>((set) => ({
             toast.success(successMessage);
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "No se pudo cambiar la contraseña.";
+
+            set({ error: errorMessage, successMessage: null });
+            toast.error(errorMessage);
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    requestResetEmail: async (email) => {
+        set({ isLoading: true, error: null, successMessage: null });
+
+        try {
+            const { message } = await RequestResetEmail({ email });
+
+            const successMessage = message || "Se ha enviado el código de reseteo.";
+
+            set({
+                error: null,
+                successMessage,
+            });
+
+            toast.success(successMessage);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "No se pudo enviar el código de reseteo.";
 
             set({ error: errorMessage, successMessage: null });
             toast.error(errorMessage);
