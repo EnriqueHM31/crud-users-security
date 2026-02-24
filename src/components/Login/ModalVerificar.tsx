@@ -7,9 +7,10 @@ export interface ModalVerificarProps {
     handleValidateCode: () => void;
     secondsLeft: number;
     inputsRef: React.RefObject<(HTMLInputElement | null)[]>;
+    isLoading: boolean;
 }
 
-export default function ModalVerificar({ otp, handleOtpChange, handleValidateCode, secondsLeft, inputsRef }: ModalVerificarProps) {
+export default function ModalVerificar({ otp, handleOtpChange, handleValidateCode, secondsLeft, inputsRef, isLoading }: ModalVerificarProps) {
     return (
         <div className="relative flex flex-col gap-4">
             <header>
@@ -26,6 +27,9 @@ export default function ModalVerificar({ otp, handleOtpChange, handleValidateCod
             <div className="mb-4 flex justify-between gap-2">
                 {otp.map((digit, index) => (
                     <input
+                        id={`otp-${index}`}
+                        name={`otp-${index}`}
+                        autoComplete={`otp-${index}`}
                         key={`otp-${index}`}
                         ref={(el) => {
                             inputsRef.current[index] = el;
@@ -45,9 +49,10 @@ export default function ModalVerificar({ otp, handleOtpChange, handleValidateCod
                 whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                 whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                 onClick={handleValidateCode}
+                disabled={isLoading}
                 className="w-full cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
             >
-                Validar código
+                {isLoading ? "Validando..." : "Validar código"}
             </motion.button>
         </div>
     );
