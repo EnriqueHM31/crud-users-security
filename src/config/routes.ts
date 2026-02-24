@@ -14,6 +14,11 @@ const RUTA_POR_ROL_DEFECTO: Record<UserRole, string> = {
     user: RUTAS.PANEL_USUARIO,
 };
 
+export const ROLES = {
+    ADMIN: "admin",
+    USER: "user",
+};
+
 export function obtenerRutaPorRolDefecto(rol: UserRole | null | undefined): string {
     if (!rol) return RUTAS.PERFIL;
 
