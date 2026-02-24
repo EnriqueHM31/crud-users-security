@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaUser, FaUserShield } from "react-icons/fa";
 import { useOpen } from "../../hooks/useOpen";
-import { useUserActions } from "../../hooks/useUsers";
+import { usePasswordActions } from "../../hooks/usePassword";
 import type { CreateUserInput, User } from "../../types/user.types";
 import { ModalEditConfirm } from "./ModalEditConfirm";
 import { ModalResetPassword } from "./ModalResetContrasena";
@@ -18,7 +18,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
     const [values, setValues] = useState<Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">>(selectedUser);
     const confirmModal = useOpen();
     const passwordModal = useOpen();
-    const { editPasswordUser } = useUserActions();
+    const { editPasswordUser } = usePasswordActions();
 
     useEffect(() => {
         setValues(selectedUser);
