@@ -25,7 +25,6 @@ export const useAuthActions = () =>
             login: state.login,
             logout: state.logout,
             checkSession: state.checkSession,
-            clearMessages: state.clearMessages,
         }))
     );
 
