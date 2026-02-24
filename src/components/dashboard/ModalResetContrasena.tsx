@@ -1,24 +1,25 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import { FaLock } from "react-icons/fa";
-import { LuShuffle } from "react-icons/lu";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-import { useState, type ChangeEvent } from "react";
+import { LuShuffle } from "react-icons/lu";
 import { useOpen } from "../../hooks/useOpen";
 import { generarContraseñaSegura } from "../../utils/conversiones";
 
 interface ModalResetPasswordProps {
     open: boolean;
+    userName: string;
     onCancel: () => void;
     onConfirm: (password: string) => void;
 }
 
-export function ModalResetPassword({ open, onCancel, onConfirm }: ModalResetPasswordProps) {
+export function ModalResetPassword({ open, userName, onCancel, onConfirm }: ModalResetPasswordProps) {
     const openShowPassword = useOpen();
 
     const [password, setPassword] = useState("");
 
-    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
+    const handlePasswordChange = (password: string) => {
+        setPassword(password);
     };
 
     const handleConfirm = () => {
@@ -43,16 +44,20 @@ export function ModalResetPassword({ open, onCancel, onConfirm }: ModalResetPass
                         <h3 className="mb-2 text-lg font-semibold">Restablecer contraseña</h3>
 
                         <p className="mb-4 text-sm text-slate-300">
-                            Está a punto de generar y asignar una nueva contraseña segura para este usuario. Esta acción reemplazará la contraseña actual.
+                            Está a punto de generar y asignar una nueva contraseña segura para el usuario <strong className="text-blue-400">{userName}</strong>.
+                            Esta acción reemplazará la contraseña actual.
                         </p>
 
                         <div className="relative">
                             <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
 
                             <input
+                                id="password"
+                                name="password"
                                 type={openShowPassword.isOpen ? "text" : "password"}
                                 placeholder="Nueva contraseña"
                                 autoComplete="new-password"
+                                value={password}
                                 readOnly
                                 className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-20 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                             />
@@ -64,13 +69,7 @@ export function ModalResetPassword({ open, onCancel, onConfirm }: ModalResetPass
                                 animate={{ scale: 1, opacity: 1, y: 0 }}
                                 whileHover={{ scale: 0.95 }}
                                 whileTap={{ scale: 0.9 }}
-                                onClick={() =>
-                                    handlePasswordChange({
-                                        target: {
-                                            value: generarContraseñaSegura(18),
-                                        },
-                                    } as ChangeEvent<HTMLInputElement>)
-                                }
+                                onClick={() => handlePasswordChange(generarContraseñaSegura(18))}
                                 className="absolute top-1/2 right-10 -translate-y-1/2 cursor-pointer text-blue-400 hover:text-blue-300"
                                 title="Generar contraseña segura"
                             >
