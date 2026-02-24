@@ -17,6 +17,7 @@ interface EditUserModalProps {
 export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModalProps) {
     const [values, setValues] = useState<Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">>(selectedUser);
     const confirmModal = useOpen();
+    const passwordModal = useOpen();
     const { editPasswordUser } = useUserActions();
 
     useEffect(() => {
@@ -44,6 +45,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
     };
 
     const handleConfirmResetPassword = (password: string) => {
+        console.log({ values });
         editPasswordUser(values.id_usuario, password);
         confirmModal.close();
         close();
@@ -145,6 +147,7 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                         whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                         whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                         className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-blue-400 hover:text-slate-200"
+                                        onClick={() => passwordModal.open()}
                                     >
                                         Resetear contraseña
                                     </motion.button>
@@ -180,7 +183,12 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                 )}
             </AnimatePresence>
 
-            <ModalResetPassword open={confirmModal.isOpen} onCancel={confirmModal.close} onConfirm={handleConfirmResetPassword} />
+            <ModalResetPassword
+                open={passwordModal.isOpen}
+                onCancel={passwordModal.close}
+                onConfirm={handleConfirmResetPassword}
+                userName={values.nombre_usuario}
+            />
         </>
     );
 }
