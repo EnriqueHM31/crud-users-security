@@ -38,6 +38,7 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                     open={openModalEdit.isOpen}
                     close={handleCloseEdit}
                     selectedUser={{
+                        id_usuario: editingUser.id_usuario,
                         nombre_usuario: editingUser.nombre_usuario,
                         nombre_completo: editingUser.nombre_completo,
                         correo_electronico: editingUser.correo_electronico,
