@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
-import { FaLock } from "react-icons/fa";
-import { useAuthenticatedUser } from "../../hooks/useUsers";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import ModalEmail from "../Login/ModalEmail";
+import ModalReset from "../Login/ModalReset";
+import ModalVerificar from "../Login/ModalVerificar";
 
-type Step = "request" | "verify" | "reset";
+type Step = "email" | "verify" | "reset";
 
 interface ForgotPasswordModalProps {
     open: boolean;
@@ -11,36 +13,83 @@ interface ForgotPasswordModalProps {
 }
 
 export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps) {
-    const user = useAuthenticatedUser();
-    const [step, setStep] = useState<Step>("request");
+    const [step, setStep] = useState<Step>("email");
+    const [email, setEmail] = useState("");
     const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("");
+    const [secondsLeft, setSecondsLeft] = useState(60);
+    const [changePassword, setChangePassword] = useState({
+        newPassword: "",
+        confirmPassword: "",
+    });
 
+    const handleRequestCode = async () => {};
+
+    const handleValidarCode = async () => {};
+
+    const handleChangePassword = async () => {};
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-    if (!user) return null;
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    const handleSendCode = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!user.correo_electronico.trim()) {
-            setError("Debes ingresar tu correo.");
-            return;
-        }
-
-        setError("");
-        setStep("verify");
+    const resetFlow = () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        setStep("email");
+        setOtp(Array(6).fill(""));
+        setEmail("");
+        setChangePassword({ newPassword: "", confirmPassword: "" });
+        setSecondsLeft(60);
     };
 
-    const handleCloseRequest = () => {
-        setStep("request");
-        setOtp(Array(6).fill(""));
-        setPassword("");
-        setConfirmPassword("");
-        setError("");
+    // ---------- TIMER CONTROL ----------
+    useEffect(() => {
+        if (step !== "verify") return;
+
+        timerRef.current = setInterval(() => {
+            setSecondsLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timerRef.current!);
+                    toast.error("El código ha expirado.");
+
+                    // Solo cambia el paso aquí
+                    setStep("email");
+                    setOtp(Array(6).fill(""));
+                    return 60;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        };
+    }, [step]);
+
+    const handleClose = () => {
+        resetFlow();
         close();
     };
 
+    // ---------- STEP 1 ----------
+    const handleSendCode = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!email.trim()) {
+            toast.error("Ingresa tu correo electrónico.");
+            return;
+        }
+
+        try {
+            await handleRequestCode();
+            setStep("verify");
+        } catch (error) {
+            console.log(error);
+            toast.error("No se pudo enviar el código.");
+        }
+    };
+
+    // ---------- STEP 2 ----------
     const handleOtpChange = (value: string, index: number) => {
         if (!/^\d?$/.test(value)) return;
 
@@ -53,53 +102,65 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         }
     };
 
-    const handleValidateCode = () => {
+    const handleValidateCode = async () => {
         const code = otp.join("");
 
         if (code.length !== 6) {
-            setError("Ingresa el código completo.");
+            toast.error("Ingresa el código completo.");
             return;
         }
 
-        setError("");
-        setStep("reset");
+        if (secondsLeft <= 0) {
+            toast.error("El código expiró.");
+            return;
+        }
+
+        try {
+            await handleValidarCode();
+            setStep("reset");
+        } catch {
+            toast.error("Código inválido.");
+        }
     };
 
-    const handleResetPassword = (e: React.FormEvent) => {
+    // ---------- STEP 3 ----------
+    const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!password || !confirmPassword) {
-            setError("Todos los campos son obligatorios.");
+        if (!changePassword.newPassword || !changePassword.confirmPassword) {
+            toast.error("Todos los campos son obligatorios.");
             return;
         }
 
-        if (password !== confirmPassword) {
-            setError("Las contraseñas no coinciden.");
+        if (changePassword.newPassword !== changePassword.confirmPassword) {
+            toast.error("Las contraseñas no coinciden.");
             return;
         }
 
-        setError("");
-        close();
+        try {
+            await handleChangePassword();
+
+            toast.success("Contraseña actualizada correctamente.");
+            handleClose();
+        } catch {
+            toast.error("No se pudo actualizar la contraseña.");
+        }
     };
 
-    const resetState = () => {
-        setStep("request");
-        setOtp(Array(6).fill(""));
-        setPassword("");
-        setConfirmPassword("");
-        setError("");
-        close();
+    const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(e.target.value);
     };
 
     return (
         <AnimatePresence>
             {open && (
                 <motion.div
+                    key="forgot-password-modal"
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={resetState}
+                    onClick={handleClose}
                 >
                     <motion.div
                         className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
@@ -109,154 +170,20 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {step === "request" && (
-                            <>
-                                <h2 className="text-2xl font-bold text-slate-100">Recuperar contraseña</h2>
-
-                                <p className="mt-2 mb-5 text-base text-slate-400">
-                                    Se enviará un código de verificación al correo vinculado a tu cuenta
-                                    <b> {user.correo_electronico.slice(0, 4)}*************.</b>
-                                </p>
-
-                                <form className="grid gap-4" onSubmit={handleSendCode}>
-                                    {error && <p className="text-sm text-rose-400">{error}</p>}
-
-                                    <div className="flex gap-3 pt-2">
-                                        <motion.button
-                                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                            type="submit"
-                                            className="flex-1 cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
-                                        >
-                                            Enviar código
-                                        </motion.button>
-
-                                        <motion.button
-                                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                            type="button"
-                                            onClick={close}
-                                            className="flex-1 cursor-pointer rounded-lg bg-slate-700 py-2 font-semibold text-slate-300 hover:bg-slate-600"
-                                        >
-                                            Cancelar
-                                        </motion.button>
-                                    </div>
-                                </form>
-                            </>
-                        )}
+                        {step === "email" && <ModalEmail email={email} handleChangeEmail={handleChangeEmail} handleSendCode={handleSendCode} />}
 
                         {step === "verify" && (
-                            <>
-                                <h2 className="text-2xl font-bold text-slate-100">Verificación</h2>
-
-                                <p className="mt-2 mb-5 text-sm text-slate-400">Ingresa el código de 6 dígitos enviado a tu correo.</p>
-
-                                <div className="mb-4 flex justify-between gap-2">
-                                    {otp.map((digit, index) => (
-                                        <input
-                                            key={index}
-                                            ref={(el) => {
-                                                inputsRef.current[index] = el;
-                                            }}
-                                            type="text"
-                                            maxLength={1}
-                                            value={digit}
-                                            onChange={(e) => handleOtpChange(e.target.value, index)}
-                                            className="h-12 w-12 rounded-lg border border-slate-800 bg-slate-900 text-center text-lg text-white outline-none focus:border-blue-500"
-                                        />
-                                    ))}
-                                </div>
-
-                                {error && <p className="text-sm text-rose-400">{error}</p>}
-
-                                <div className="flex gap-3 pt-2">
-                                    <motion.button
-                                        initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                                        animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                                        whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                        type="submit"
-                                        onClick={handleValidateCode}
-                                        className="flex-1 rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
-                                    >
-                                        Validar código
-                                    </motion.button>
-                                    <motion.button
-                                        initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                                        animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                                        whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                        type="button"
-                                        onClick={handleCloseRequest}
-                                        className="flex-1 cursor-pointer rounded-lg bg-slate-700 py-2 font-semibold text-slate-300 hover:bg-slate-600"
-                                    >
-                                        Cancelar
-                                    </motion.button>
-                                </div>
-                            </>
+                            <ModalVerificar
+                                otp={otp}
+                                handleOtpChange={handleOtpChange}
+                                handleValidateCode={handleValidateCode}
+                                secondsLeft={secondsLeft}
+                                inputsRef={inputsRef}
+                            />
                         )}
 
                         {step === "reset" && (
-                            <>
-                                <h2 className="text-2xl font-bold text-slate-100">Nueva contraseña</h2>
-
-                                <p className="mt-2 mb-5 text-sm text-slate-400">Ingresa y confirma tu nueva contraseña.</p>
-
-                                <form className="grid gap-4" onSubmit={handleResetPassword}>
-                                    <div className="relative">
-                                        <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
-                                        <input
-                                            type="password"
-                                            placeholder="Nueva contraseña"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
-                                        />
-                                    </div>
-
-                                    <div className="relative">
-                                        <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
-                                        <input
-                                            type="password"
-                                            placeholder="Confirmar nueva contraseña"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
-                                        />
-                                    </div>
-
-                                    {error && <p className="text-sm text-rose-400">{error}</p>}
-
-                                    <div className="flex gap-3 pt-2">
-                                        <motion.button
-                                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                            type="submit"
-                                            className="flex-1 rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
-                                        >
-                                            Actualizar contraseña
-                                        </motion.button>
-
-                                        <motion.button
-                                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                            type="button"
-                                            onClick={handleCloseRequest}
-                                            className="flex-1 cursor-pointer rounded-lg bg-slate-700 py-2 font-semibold text-slate-300 hover:bg-slate-600"
-                                        >
-                                            Cancelar
-                                        </motion.button>
-                                    </div>
-                                </form>
-                            </>
+                            <ModalReset changePassword={changePassword} handleChangePassword={handleChangePassword} handleSubmit={handleResetPassword} />
                         )}
                     </motion.div>
                 </motion.div>
