@@ -6,7 +6,7 @@ export interface ModalResetProps {
         newPassword: string;
         confirmPassword: string;
     };
-    handleChangePassword: () => void;
+    handleChangePassword: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     isLoading: boolean;
 }
@@ -23,8 +23,11 @@ export default function ModalReset({ changePassword, handleChangePassword, handl
                         type="password"
                         placeholder="Nueva contraseña"
                         disabled={isLoading}
+                        name="newPassword"
+                        autoComplete="new-password"
+                        id="newPassword"
                         value={changePassword.newPassword}
-                        onChange={handleChangePassword}
+                        onChange={(e) => handleChangePassword(e)}
                         className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 text-sm text-white outline-none focus:border-blue-500"
                     />
                 </div>
@@ -34,6 +37,9 @@ export default function ModalReset({ changePassword, handleChangePassword, handl
                     <input
                         type="password"
                         placeholder="Confirmar contraseña"
+                        name="confirmPassword"
+                        autoComplete="new-password"
+                        id="confirmPassword"
                         disabled={isLoading}
                         value={changePassword.confirmPassword}
                         onChange={handleChangePassword}
