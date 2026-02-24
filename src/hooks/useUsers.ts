@@ -12,7 +12,6 @@ export const useUserActions = () =>
             createUser: state.createUser,
             updateUser: state.updateUser,
             deleteUser: state.deleteUser,
-            editPasswordUser: state.editPassowrdUser,
         }))
     );
 
