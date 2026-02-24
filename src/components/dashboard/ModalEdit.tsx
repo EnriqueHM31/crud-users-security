@@ -48,27 +48,32 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={close}
                     >
                         <motion.div
-                            className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
-                            initial={{ scale: 0.95, opacity: 0, y: 40 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.95, opacity: 0, y: 40 }}
+                            className="flex h-screen w-full max-w-md flex-col rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
+                            initial={{ scale: 0.95, opacity: 0, x: 40 }}
+                            animate={{ scale: 1, opacity: 1, x: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, x: 40 }}
                             transition={{ type: "spring", stiffness: 260, damping: 20 }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <h2 className="text-2xl font-bold text-slate-100">Sistema de usuarios</h2>
+                            <header>
+                                <div className="flex items-center gap-2">
+                                    <img src="/logo.png" alt="logo" className="h-10 w-10 rounded-full" />
+                                    <h2 className="text-2xl font-bold text-slate-100">Sistema de seguridad</h2>
+                                </div>
 
-                            <h3 className="mt-2 text-lg font-semibold text-blue-400">Editar usuario</h3>
+                                <h3 className="mt-2 text-lg font-semibold text-blue-400">Editar usuario</h3>
 
-                            <p className="mt-1 mb-5 text-sm text-slate-400">Modifica la información del usuario seleccionado.</p>
+                                <p className="mt-1 mb-5 text-sm text-slate-400">Modifica la información del usuario seleccionado.</p>
+                            </header>
 
-                            <form className="grid gap-4" onSubmit={handleSubmit}>
+                            <form className="flex flex-1 flex-col gap-5" onSubmit={handleSubmit}>
                                 <div className="relative">
                                     <FaUser className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                     <input
@@ -124,15 +129,26 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                     </select>
                                 </div>
 
-                                <div className="flex gap-3 pt-2">
-                                    <motion.button type="submit" className="flex-1 rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900">
+                                <div className="flex flex-1 items-end gap-3 pt-2">
+                                    <motion.button
+                                        initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                                        animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                                        whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                                        type="submit"
+                                        className="h-fit flex-1 cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
+                                    >
                                         Guardar cambios
                                     </motion.button>
 
                                     <motion.button
+                                        initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                                        animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                                        whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                         type="button"
                                         onClick={close}
-                                        className="flex-1 rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
+                                        className="h-fit flex-1 cursor-pointer rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
                                     >
                                         Cancelar
                                     </motion.button>
