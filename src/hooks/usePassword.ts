@@ -7,6 +7,7 @@ export const usePasswordActions = () =>
         useShallow((state) => ({
             editPasswordUser: state.editPasswordUser,
             changePassword: state.changePassword,
+            requestResetEmail: state.requestResetEmail,
         }))
     );
 
