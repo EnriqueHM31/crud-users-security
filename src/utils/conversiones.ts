@@ -14,3 +14,10 @@ export function generarContraseñaSegura(length = 10): string {
 
     return Array.from(array, (num) => charset[num % charset.length]).join("");
 }
+
+export const formatoTiempo = (totalSeconds: number) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+};
