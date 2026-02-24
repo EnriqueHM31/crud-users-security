@@ -53,3 +53,23 @@ export async function CambiarContrasena({
         throw new Error(errorMessage);
     }
 }
+
+export async function RequestResetEmail({ email }: { email: string }): Promise<{ message: string }> {
+    try {
+        const response = await fetch(API_URL_PASSWORD + "/request-reset", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+        });
+
+        await handleApiError(response);
+
+        const { message } = await response.json();
+        return { message };
+    } catch (e) {
+        const errorMessage = getUserErrorMessage(e);
+        throw new Error(errorMessage);
+    }
+}
