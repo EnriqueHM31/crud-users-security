@@ -26,7 +26,7 @@ export default function Dashboard() {
         await createUser(payload);
     };
 
-    const handleEditSave = async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">): Promise<void> => {
+    const handleEditSave = async (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">): Promise<void> => {
         if (!editingUser) return;
         await updateUser(editingUser.id_usuario, payload);
 

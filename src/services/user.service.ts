@@ -1,4 +1,4 @@
-import { API_URL_USER } from "../config";
+import { API_URL_USER, API_URL_PASSWORD } from "../config";
 import type { User } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
@@ -85,7 +85,7 @@ export async function EliminarUsuario({ id_usuario }: { id_usuario: string }): P
 
 export async function CambiarContrasena({ id_usuario, contrasena }: { id_usuario: string; contrasena: string }): Promise<{ message: string }> {
     try {
-        const response = await fetch(`${API_URL_USER}/contraseña/${id_usuario}`, {
+        const response = await fetch(`${API_URL_PASSWORD}/reset/${id_usuario}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
