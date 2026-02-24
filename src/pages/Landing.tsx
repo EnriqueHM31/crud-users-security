@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../components/layout/AppLayout";
 import { CreateTaskModal } from "../components/UserPage/ModalTask";
@@ -7,10 +7,12 @@ import { useOpen } from "../hooks/useOpen";
 import { useAuthenticatedUser } from "../hooks/useUsers";
 import { useTaskStore } from "../store/task.store";
 import { ModalDeleteTask } from "../components/UserPage/ModalDeleteTask";
+import type { Task } from "../types/task.types";
 
 export default function Landing() {
     const user = useAuthenticatedUser();
     const { fetchTasks, tasks, createTask, updateTask, deleteTask } = useTaskStore();
+    const [taskEliminated, setTaskEliminated] = useState<Task | null>(null);
 
     const openModalCreateTask = useOpen();
     const openModalDeleteTask = useOpen();
@@ -28,10 +30,22 @@ export default function Landing() {
         await updateTask(id_tarea, true);
     };
 
-    const handleSubmitDeleteTask = async ({ id_tarea }: { id_tarea: string }) => {
-        await deleteTask(id_tarea);
+    const handleSubmitDeleteTask = async () => {
+        if (!taskEliminated) return;
+
+        await deleteTask(taskEliminated.id_tarea);
+        handleTaskDeleted();
     };
 
+    const handleTaskDeletedModal = (task: Task | null) => {
+        openModalDeleteTask.open();
+        setTaskEliminated(task);
+    };
+
+    const handleTaskDeleted = () => {
+        openModalDeleteTask.close();
+        setTaskEliminated(null);
+    };
     return (
         <AppLayout title={`Bienvenido, ${user.nombre_completo}`}>
             <motion.section
@@ -117,24 +131,19 @@ export default function Landing() {
                                             animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
                                             whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                             whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                                            onClick={() => openModalDeleteTask.open()}
+                                            onClick={() => handleTaskDeletedModal(task)}
                                             className="cursor-pointer rounded-lg bg-red-800 px-4 py-2 text-sm font-medium text-white hover:bg-red-900"
                                         >
                                             Eliminar
                                         </motion.button>
                                     </div>
                                 </div>
-                                <ModalDeleteTask
-                                    open={openModalDeleteTask.isOpen}
-                                    close={openModalDeleteTask.close}
-                                    onDelete={handleSubmitDeleteTask}
-                                    task={task}
-                                />
                             </div>
                         );
                     })}
                 </div>
             </motion.section>
+            <ModalDeleteTask open={openModalDeleteTask.isOpen} close={handleTaskDeleted} onDelete={handleSubmitDeleteTask} task={taskEliminated} />
 
             <CreateTaskModal open={openModalCreateTask.isOpen} close={openModalCreateTask.close} onSubmit={createTask} />
         </AppLayout>
