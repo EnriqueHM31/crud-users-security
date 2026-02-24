@@ -1,4 +1,5 @@
 import { FaLock } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export interface ModalResetProps {
     changePassword: {
@@ -7,9 +8,10 @@ export interface ModalResetProps {
     };
     handleChangePassword: () => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    isLoading: boolean;
 }
 
-export default function ModalReset({ changePassword, handleChangePassword, handleSubmit }: ModalResetProps) {
+export default function ModalReset({ changePassword, handleChangePassword, handleSubmit, isLoading }: ModalResetProps) {
     return (
         <>
             <h2 className="text-2xl font-bold text-slate-100">Nueva contraseña</h2>
@@ -20,6 +22,7 @@ export default function ModalReset({ changePassword, handleChangePassword, handl
                     <input
                         type="password"
                         placeholder="Nueva contraseña"
+                        disabled={isLoading}
                         value={changePassword.newPassword}
                         onChange={handleChangePassword}
                         className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 text-sm text-white outline-none focus:border-blue-500"
@@ -31,15 +34,24 @@ export default function ModalReset({ changePassword, handleChangePassword, handl
                     <input
                         type="password"
                         placeholder="Confirmar contraseña"
+                        disabled={isLoading}
                         value={changePassword.confirmPassword}
                         onChange={handleChangePassword}
                         className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 text-sm text-white outline-none focus:border-blue-500"
                     />
                 </div>
 
-                <button type="submit" className="rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900">
-                    Actualizar contraseña
-                </button>
+                <motion.button
+                    initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                    animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                    whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                    disabled={isLoading}
+                    type="submit"
+                    className="rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
+                >
+                    {isLoading ? "Actualizando..." : "Actualizar contraseña"}
+                </motion.button>
             </form>
         </>
     );
