@@ -58,10 +58,59 @@ export async function RequestResetEmail({ email }: { email: string }): Promise<{
     try {
         const response = await fetch(API_URL_PASSWORD + "/request-reset", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ email }),
+        });
+
+        await handleApiError(response);
+
+        const { message } = await response.json();
+        return { message };
+    } catch (e) {
+        const errorMessage = getUserErrorMessage(e);
+        throw new Error(errorMessage);
+    }
+}
+
+export async function VerificarOtp({ email, otp }: { email: string; otp: string }): Promise<{ message: string }> {
+    try {
+        const response = await fetch(`${API_URL_PASSWORD}/verify-reset`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                otp,
+            }),
+        });
+
+        await handleApiError(response);
+
+        const { message } = await response.json();
+        return { message };
+    } catch (e) {
+        const errorMessage = getUserErrorMessage(e);
+        throw new Error(errorMessage);
+    }
+}
+
+export async function resetearContrasenaLogin({ email, contrasena }: { email: string; contrasena: string }): Promise<{ message: string }> {
+    try {
+        const response = await fetch(`${API_URL_PASSWORD}/reset-password-login`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                newPassword: contrasena,
+            }),
         });
 
         await handleApiError(response);
