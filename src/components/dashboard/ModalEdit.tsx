@@ -2,27 +2,29 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaUser, FaUserShield } from "react-icons/fa";
 import { useOpen } from "../../hooks/useOpen";
+import { useUserActions } from "../../hooks/useUsers";
 import type { CreateUserInput, User } from "../../types/user.types";
 import { ModalEditConfirm } from "./ModalEditConfirm";
+import { ModalResetPassword } from "./ModalResetContrasena";
 
 interface EditUserModalProps {
     open: boolean;
     close: () => void;
-    selectedUser: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">;
-    onSubmit: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => void;
+    selectedUser: Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">;
+    onSubmit: (payload: Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => void;
 }
 
 export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModalProps) {
-    const [values, setValues] = useState<Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">>(selectedUser);
+    const [values, setValues] = useState<Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">>(selectedUser);
     const confirmModal = useOpen();
+    const { editPasswordUser } = useUserActions();
 
     useEffect(() => {
         setValues(selectedUser);
     }, [selectedUser]);
 
     const handleFieldChange =
-        (field: keyof Omit<User & CreateUserInput, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) =>
-        (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        (field: keyof Omit<User & CreateUserInput, "fecha_creacion" | "fecha_actualizacion">) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
             setValues((prev) => ({
                 ...prev,
                 [field]: event.target.value,
@@ -37,6 +39,12 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
 
     const handleConfirm = () => {
         onSubmit(values);
+        confirmModal.close();
+        close();
+    };
+
+    const handleConfirmResetPassword = (password: string) => {
+        editPasswordUser(values.id_usuario, password);
         confirmModal.close();
         close();
     };
@@ -129,6 +137,19 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                     </select>
                                 </div>
 
+                                <div className="relative mt-4">
+                                    <motion.button
+                                        type="button"
+                                        initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                                        animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                                        whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                                        className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-blue-400 hover:text-slate-200"
+                                    >
+                                        Resetear contraseña
+                                    </motion.button>
+                                </div>
+
                                 <div className="flex flex-1 items-end gap-3 pt-2">
                                     <motion.button
                                         initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
@@ -158,6 +179,8 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <ModalResetPassword open={confirmModal.isOpen} onCancel={confirmModal.close} onConfirm={handleConfirmResetPassword} />
         </>
     );
 }
