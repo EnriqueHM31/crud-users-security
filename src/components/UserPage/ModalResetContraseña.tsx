@@ -23,16 +23,9 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         newPassword: "",
         confirmPassword: "",
     });
-    const { requestResetEmail } = usePasswordActions();
+    const { requestResetEmail, verifyOtp, resetPasswordLogin } = usePasswordActions();
     const { isLoading } = usePasswordStore();
 
-    const handleRequestCode = async () => {
-        await requestResetEmail(email);
-    };
-
-    const handleValidarCode = async () => {};
-
-    const handleChangePassword = async () => {};
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -87,8 +80,11 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         }
 
         try {
-            await handleRequestCode();
-            setStep("verify");
+            const isSent = await requestResetEmail(email);
+
+            if (isSent) {
+                setStep("verify");
+            }
         } catch (error) {
             console.log(error);
             toast.error("No se pudo enviar el código.");
@@ -122,8 +118,11 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         }
 
         try {
-            await handleValidarCode();
-            setStep("reset");
+            const isValid = await verifyOtp(email, code);
+
+            if (isValid) {
+                setStep("reset");
+            }
         } catch {
             toast.error("Código inválido.");
         }
@@ -144,10 +143,12 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         }
 
         try {
-            await handleChangePassword();
+            const isReset = await resetPasswordLogin(email, changePassword.newPassword);
 
-            toast.success("Contraseña actualizada correctamente.");
-            handleClose();
+            if (isReset) {
+                toast.success("Contraseña actualizada correctamente.");
+                handleClose();
+            }
         } catch {
             toast.error("No se pudo actualizar la contraseña.");
         }
@@ -155,6 +156,11 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
 
     const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
+    };
+
+    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setChangePassword({ ...changePassword, [name]: value });
     };
 
     return (
