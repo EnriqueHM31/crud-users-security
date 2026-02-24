@@ -12,7 +12,7 @@ export const useUserActions = () =>
             createUser: state.createUser,
             updateUser: state.updateUser,
             deleteUser: state.deleteUser,
-            clearMessages: state.clearMessages,
+            editPasswordUser: state.editPassowrdUser,
         }))
     );
 
