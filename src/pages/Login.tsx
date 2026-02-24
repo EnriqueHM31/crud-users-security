@@ -1,11 +1,13 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { FiLock, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
-import { obtenerRutaPorRolDefecto } from "../config/routes";
-import { useAuthStore } from "../store/auth.store";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { FiLock, FiUser } from "react-icons/fi";
+import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { obtenerRutaPorRolDefecto } from "../config/routes";
+import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
+import { useOpen } from "../hooks/useOpen";
+import { useAuthStore } from "../store/auth.store";
+import { ModalResetContraseña } from "../components/UserPage/ModalResetContraseña";
 
 interface LoginFormState {
     username: string;
@@ -21,9 +23,10 @@ export default function Login() {
     const [form, setForm] = useState<LoginFormState>(initialState);
     const isAuthenticated = useIsAuthenticated();
     const rol = useUserRole();
-    const { login, clearMessages } = useAuthActions();
+    const { login } = useAuthActions();
     const isLoading = useAuthLoading();
     const navigate = useNavigate();
+    const openResetContraseña = useOpen();
 
     if (isAuthenticated && rol) {
         return <Navigate to={obtenerRutaPorRolDefecto(rol)} replace />;
@@ -36,8 +39,6 @@ export default function Login() {
             ...previous,
             [name]: value,
         }));
-
-        clearMessages();
     };
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -104,6 +105,22 @@ export default function Login() {
                             onChange={handleFieldChange}
                         />
                     </label>
+                    {/* Link intermedio */}
+                    <div className="my-2 flex justify-end">
+                        <motion.button
+                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                            type="button"
+                            className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 hover:underline"
+                            onClick={() => {
+                                openResetContraseña.open();
+                            }}
+                        >
+                            ¿Olvidaste la contraseña?
+                        </motion.button>
+                    </div>
                     <motion.button
                         initial={{ scale: 0.95, y: 8 }}
                         animate={{ scale: 1, y: 0 }}
@@ -116,6 +133,8 @@ export default function Login() {
                     </motion.button>
                 </form>
             </motion.div>
+
+            <ModalResetContraseña key="modal-reset-contrasena" open={openResetContraseña.isOpen} close={openResetContraseña.close} />
         </div>
     );
 }
