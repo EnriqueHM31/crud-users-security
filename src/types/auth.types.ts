@@ -17,7 +17,6 @@ export interface AuthActions {
     login: (credentials: LoginCredentials) => Promise<boolean>;
     logout: () => Promise<void>;
     checkSession: () => Promise<boolean>;
-    clearMessages: () => void;
 }
 
 export type AuthStore = AuthState & AuthActions;
