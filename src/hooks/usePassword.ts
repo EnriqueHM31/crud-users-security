@@ -8,6 +8,8 @@ export const usePasswordActions = () =>
             editPasswordUser: state.editPasswordUser,
             changePassword: state.changePassword,
             requestResetEmail: state.requestResetEmail,
+            verifyOtp: state.verifyOtp,
+            resetPasswordLogin: state.resetPasswordLogin,
         }))
     );
 
