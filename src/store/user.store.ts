@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { create } from "zustand";
-import { CrearUsuario, EditarUsuario, EliminarUsuario, ObtenerUsuarios } from "../services/user.service";
+import { CambiarContrasena, CrearUsuario, EditarUsuario, EliminarUsuario, ObtenerUsuarios } from "../services/user.service";
 import type { User, UUID } from "../types/user.types";
 
 interface UserState {
@@ -12,11 +12,10 @@ interface UserState {
     createUser: (user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
     updateUser: (id_usuario: UUID, user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
     deleteUser: (id_usuario: UUID) => Promise<void>;
-    getUserById: (id: UUID) => User | undefined;
-    clearMessages: () => void;
+    editPassowrdUser: (id_usuario: UUID, password: string) => Promise<void>;
 }
 
-export const useUserStore = create<UserState>((set, get) => ({
+export const useUserStore = create<UserState>((set) => ({
     users: [],
     isLoading: false,
     error: null,
@@ -96,6 +95,26 @@ export const useUserStore = create<UserState>((set, get) => ({
             set({ isLoading: false });
         }
     },
-    getUserById: (id) => get().users.find((user) => user.id_usuario === id),
-    clearMessages: () => set({ error: null, successMessage: null }),
+    editPassowrdUser: async (id_usuario, password) => {
+        set({ isLoading: true, error: null, successMessage: null });
+        try {
+            const { message } = await CambiarContrasena({
+                id_usuario,
+                contrasena: password,
+            });
+            const successMessage = message || "Contraseña actualizada correctamente.";
+            set((state) => ({
+                users: state.users.map((user) => (user.id_usuario === id_usuario ? { ...user, contrasena: password } : user)),
+                error: null,
+                successMessage,
+            }));
+            toast.success(successMessage);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "No se pudo actualizar la contraseña.";
+            set({ error: errorMessage, successMessage: null });
+            toast.error(errorMessage);
+        } finally {
+            set({ isLoading: false });
+        }
+    },
 }));
