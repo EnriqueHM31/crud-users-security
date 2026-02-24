@@ -2,28 +2,30 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { FaLock } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { toast } from "sonner";
+import { useCurrentUserId } from "../../hooks/useAuth";
 import { useOpen } from "../../hooks/useOpen";
-import { ModalResetContraseña } from "./ModalResetContraseña";
 
 interface ChangePasswordModalProps {
     open: boolean;
     close: () => void;
-    onSubmit: (payload: { currentPassword: string; newPassword: string; confirmPassword: string }) => void;
+    onSubmit: ({ currentPassword, newPassword, id_usuario }: { currentPassword: string; newPassword: string; id_usuario: string }) => void;
 }
 
 export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalProps) {
-    const openResetContraseña = useOpen();
-    const [values, setValues] = useState({
+    const userId = useCurrentUserId();
+    const [changePassword, setChangePassword] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
     });
 
-    const [error, setError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+    const openShowPassword1 = useOpen();
+    const openShowPassword2 = useOpen();
+    const openShowPassword3 = useOpen();
 
-    const handleFieldChange = (field: keyof typeof values) => (event: ChangeEvent<HTMLInputElement>) => {
-        setValues((prev) => ({
+    const handleFieldChange = (field: keyof typeof changePassword) => (event: ChangeEvent<HTMLInputElement>) => {
+        setChangePassword((prev) => ({
             ...prev,
             [field]: event.target.value,
         }));
@@ -32,17 +34,27 @@ export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalP
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!values.currentPassword.trim() || !values.newPassword.trim() || !values.confirmPassword.trim()) {
-            setError("Todos los campos son obligatorios.");
+        if (!changePassword.currentPassword.trim() || !changePassword.newPassword.trim() || !changePassword.confirmPassword.trim()) {
+            toast.error("Todos los campos son obligatorios.");
             return;
         }
 
-        if (values.newPassword !== values.confirmPassword) {
-            setError("Las nuevas contraseñas no coinciden.");
+        if (changePassword.newPassword !== changePassword.confirmPassword) {
+            toast.error("Las nuevas contraseñas no coinciden.");
             return;
         }
 
-        onSubmit(values);
+        if (!userId) {
+            toast.error("No se puede cambiar la contraseña sin identificarse.");
+            return;
+        }
+        onSubmit({ currentPassword: changePassword.currentPassword, newPassword: changePassword.newPassword, id_usuario: userId });
+        setChangePassword({ currentPassword: "", newPassword: "", confirmPassword: "" });
+        close();
+    };
+
+    const handleCloseModal = () => {
+        setChangePassword({ currentPassword: "", newPassword: "", confirmPassword: "" });
         close();
     };
 
@@ -50,11 +62,12 @@ export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalP
         <AnimatePresence>
             {open && (
                 <motion.div
+                    key="modal-contrasena"
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={close}
+                    onClick={handleCloseModal}
                 >
                     <motion.div
                         className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
@@ -64,29 +77,36 @@ export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalP
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h2 className="text-2xl font-bold text-slate-100">Seguridad de la cuenta</h2>
+                        <header>
+                            <div>
+                                <img src="/logo.png" alt="logo" className="h-10 w-10 rounded-full" />
+                                <h2 className="text-2xl font-bold text-slate-100">Sistema de Seguridad</h2>
+                            </div>
+                            <h3 className="mt-2 text-lg font-semibold text-blue-400">Cambiar contraseña</h3>
 
-                        <h3 className="mt-2 text-lg font-semibold text-blue-400">Cambiar contraseña</h3>
-
-                        <p className="mt-1 mb-5 text-sm text-slate-400">Actualiza tu contraseña para mantener tu cuenta segura.</p>
+                            <p className="mt-1 mb-5 text-sm text-slate-400">Actualiza tu contraseña para mantener tu cuenta segura.</p>
+                        </header>
 
                         <form className="grid gap-4" onSubmit={handleSubmit}>
                             {/* Contraseña actual */}
                             <div className="relative">
                                 <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    type={showPassword ? "text" : "password"}
+                                    type={openShowPassword1.isOpen ? "text" : "password"}
                                     placeholder="Contraseña actual"
-                                    value={values.currentPassword}
+                                    id="currentPassword"
+                                    name="currentPassword"
+                                    autoComplete="current-password"
+                                    value={changePassword.currentPassword}
                                     onChange={handleFieldChange("currentPassword")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-10 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
                                 <motion.button
                                     type="button"
-                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    onClick={() => openShowPassword1.toggle()}
                                     className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
                                 >
-                                    {showPassword ? <IoEyeOff /> : <IoEye />}
+                                    {openShowPassword1.isOpen ? <IoEyeOff /> : <IoEye />}
                                 </motion.button>
                             </div>
 
@@ -94,38 +114,46 @@ export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalP
                             <div className="relative">
                                 <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    type="password"
+                                    type={openShowPassword2.isOpen ? "text" : "password"}
                                     placeholder="Nueva contraseña"
-                                    value={values.newPassword}
+                                    id="newPassword"
+                                    name="newPassword"
+                                    autoComplete="new-password"
+                                    value={changePassword.newPassword}
                                     onChange={handleFieldChange("newPassword")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
+                                <motion.button
+                                    type="button"
+                                    onClick={() => openShowPassword2.toggle()}
+                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                                >
+                                    {openShowPassword2.isOpen ? <IoEyeOff /> : <IoEye />}
+                                </motion.button>
                             </div>
 
                             {/* Confirmar contraseña */}
                             <div className="relative">
                                 <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    type="password"
+                                    type={openShowPassword3.isOpen ? "text" : "password"}
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    autoComplete="new-password"
                                     placeholder="Confirmar nueva contraseña"
-                                    value={values.confirmPassword}
+                                    value={changePassword.confirmPassword}
                                     onChange={handleFieldChange("confirmPassword")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
-                            </div>
 
-                            {/* Link intermedio */}
-                            <div className="flex justify-end">
-                                <button
+                                <motion.button
                                     type="button"
-                                    className="cursor-pointer text-sm text-blue-400 transition hover:text-blue-300 hover:underline"
-                                    onClick={() => openResetContraseña.open()}
+                                    onClick={() => openShowPassword3.toggle()}
+                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
                                 >
-                                    ¿Olvidaste la contraseña?
-                                </button>
+                                    {openShowPassword3.isOpen ? <IoEyeOff /> : <IoEye />}
+                                </motion.button>
                             </div>
-
-                            {error && <p className="text-sm text-rose-400">{error}</p>}
 
                             <div className="flex gap-3 pt-2">
                                 <motion.button
@@ -145,7 +173,7 @@ export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalP
                                     whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                     whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                                     type="button"
-                                    onClick={close}
+                                    onClick={handleCloseModal}
                                     className="flex-1 cursor-pointer rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
                                 >
                                     Cancelar
@@ -155,8 +183,6 @@ export function ModalContraseña({ open, close, onSubmit }: ChangePasswordModalP
                     </motion.div>
                 </motion.div>
             )}
-
-            <ModalResetContraseña open={openResetContraseña.isOpen} close={openResetContraseña.close} />
         </AnimatePresence>
     );
 }
