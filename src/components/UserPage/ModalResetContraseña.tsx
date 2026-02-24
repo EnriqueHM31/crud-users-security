@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import ModalEmail from "../Login/ModalEmail";
 import ModalReset from "../Login/ModalReset";
 import ModalVerificar from "../Login/ModalVerificar";
+import { usePasswordActions } from "../../hooks/usePassword";
+import { usePasswordStore } from "../../store/password.store";
 
 type Step = "email" | "verify" | "reset";
 
@@ -16,13 +18,17 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
     const [step, setStep] = useState<Step>("email");
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-    const [secondsLeft, setSecondsLeft] = useState(60);
+    const [secondsLeft, setSecondsLeft] = useState(300);
     const [changePassword, setChangePassword] = useState({
         newPassword: "",
         confirmPassword: "",
     });
+    const { requestResetEmail } = usePasswordActions();
+    const { isLoading } = usePasswordStore();
 
-    const handleRequestCode = async () => {};
+    const handleRequestCode = async () => {
+        await requestResetEmail(email);
+    };
 
     const handleValidarCode = async () => {};
 
@@ -36,7 +42,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         setOtp(Array(6).fill(""));
         setEmail("");
         setChangePassword({ newPassword: "", confirmPassword: "" });
-        setSecondsLeft(60);
+        setSecondsLeft(300);
     };
 
     // ---------- TIMER CONTROL ----------
@@ -52,7 +58,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                     // Solo cambia el paso aquí
                     setStep("email");
                     setOtp(Array(6).fill(""));
-                    return 60;
+                    return 300; // 60 segundos
                 }
                 return prev - 1;
             });
@@ -170,7 +176,9 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {step === "email" && <ModalEmail email={email} handleChangeEmail={handleChangeEmail} handleSendCode={handleSendCode} />}
+                        {step === "email" && (
+                            <ModalEmail email={email} handleChangeEmail={handleChangeEmail} handleSendCode={handleSendCode} isLoading={isLoading} />
+                        )}
 
                         {step === "verify" && (
                             <ModalVerificar
