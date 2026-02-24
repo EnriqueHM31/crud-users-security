@@ -15,6 +15,10 @@ export default function ModalEmail({ email, handleChangeEmail, handleSendCode, i
 
             <form onSubmit={handleSendCode} className="grid gap-4">
                 <input
+                    id="email"
+                    name="email"
+                    autoComplete="email"
+                    disabled={isLoading}
                     type="email"
                     value={email}
                     onChange={handleChangeEmail}
@@ -28,6 +32,7 @@ export default function ModalEmail({ email, handleChangeEmail, handleSendCode, i
                     whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                     whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                     type="submit"
+                    disabled={isLoading}
                     className="cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
                 >
                     {isLoading ? "Enviando..." : "Enviar código"}
