@@ -40,8 +40,8 @@ export default function Dashboard() {
     };
 
     return (
-        <AppLayout title="Dashboard">
-            <motion.div className="grid gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+        <AppLayout title="Dashboard" descripcion="En este panel podrás administrar tus usuarios.">
+            <motion.div className="grid h-full gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                 <UserTable
                     users={users}
                     onEdit={setEditingUser}
