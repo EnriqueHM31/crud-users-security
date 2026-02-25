@@ -80,7 +80,7 @@ export default function Login() {
             >
                 <div className="mb-1 flex items-center justify-center gap-2">
                     <img src={"/logo.png"} alt="Logo" className="h-16 w-16 rounded-full" />
-                    <h1 className="text-3xl font-bold">Portal Seguro</h1>
+                    <h1 className="text-3xl font-bold">Portal Seguro ITSH</h1>
                 </div>
                 <p className="mb-8 text-center text-sm text-slate-400">Acceso restringido para personal autorizado.</p>
 
