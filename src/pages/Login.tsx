@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FiLock, FiUser } from "react-icons/fi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import { useOpen } from "../hooks/useOpen";
 import { useAuthStore } from "../store/auth.store";
 import type { FormularioLogin } from "../types/auth.types";
 import { validarCamposVacios } from "../utils/conversiones";
+const RESET_STORAGE_KEY = "reset_password_flow";
 
 export default function Login() {
     const [formularioLogin, setFormularioLogin] = useState<FormularioLogin>(initialState);
@@ -22,6 +23,20 @@ export default function Login() {
     const isLoading = useAuthLoading();
     const openResetContraseña = useOpen();
     const openShowPassword = useOpen();
+
+    useEffect(() => {
+        const saved = localStorage.getItem(RESET_STORAGE_KEY);
+        if (!saved) return;
+
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed?.isActive) {
+                openResetContraseña.open();
+            }
+        } catch {
+            localStorage.removeItem(RESET_STORAGE_KEY);
+        }
+    }, [openResetContraseña]);
 
     if (isAuthenticated && rol) {
         return <Navigate to={obtenerRutaPorRolDefecto(rol)} replace />;
@@ -119,7 +134,18 @@ export default function Login() {
                             whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                             type="button"
                             className="cursor-pointer text-xs text-blue-400 hover:text-blue-300 hover:underline"
-                            onClick={() => openResetContraseña.open()}
+                            onClick={() => {
+                                const resetState = {
+                                    isActive: true,
+                                    step: "email",
+                                    email: "",
+                                    secondsLeft: 300,
+                                };
+
+                                localStorage.setItem(RESET_STORAGE_KEY, JSON.stringify(resetState));
+
+                                openResetContraseña.open();
+                            }}
                         >
                             ¿Olvidaste tu contraseña?
                         </motion.button>
@@ -153,7 +179,13 @@ export default function Login() {
                 </form>
             </motion.div>
 
-            <ModalResetContraseña key="modal-reset" open={openResetContraseña.isOpen} close={openResetContraseña.close} />
+            <ModalResetContraseña
+                key="modal-reset"
+                open={openResetContraseña.isOpen}
+                close={() => {
+                    openResetContraseña.close();
+                }}
+            />
         </div>
     );
 }
