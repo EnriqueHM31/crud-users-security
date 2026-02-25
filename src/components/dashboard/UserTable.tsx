@@ -49,7 +49,7 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
             )}
 
             <motion.section
-                className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-xl"
+                className="h-full rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-xl"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35 }}
