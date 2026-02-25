@@ -4,7 +4,7 @@ import { FiLock, FiUser } from "react-icons/fi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ModalResetContraseña } from "../components/UserPage/ModalResetContraseña";
+import { ModalResetContraseña } from "../components/user/ModalResetContraseña";
 import { obtenerRutaPorRolDefecto } from "../config/routes";
 import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
 import { useOpen } from "../hooks/useOpen";

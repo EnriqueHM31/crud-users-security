@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { FiLock } from "react-icons/fi";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../components/layout/AppLayout";
-import { ModalContraseña } from "../components/UserPage/ModalContraseña";
+import { ModalContraseña } from "../components/user/ModalContraseña";
 import { useOpen } from "../hooks/useOpen";
 import { useAuthenticatedUser } from "../hooks/useUsers";
 import { formatearFechaMexico } from "../utils/conversiones";

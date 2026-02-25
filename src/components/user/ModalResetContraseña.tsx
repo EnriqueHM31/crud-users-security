@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import ModalEmail from "../Login/ModalEmail";
-import ModalReset from "../Login/ModalReset";
-import ModalVerificar from "../Login/ModalVerificar";
+import ModalEmail from "../login/ModalEmail";
+import ModalReset from "../login/ModalReset";
+import ModalVerificar from "../login/ModalVerificar";
 import { usePasswordActions } from "../../hooks/usePassword";
 import { usePasswordStore } from "../../store/password.store";
 

@@ -2,11 +2,11 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../components/layout/AppLayout";
-import { CreateTaskModal } from "../components/UserPage/ModalTask";
+import { CreateTaskModal } from "../components/user/ModalTask";
 import { useOpen } from "../hooks/useOpen";
 import { useAuthenticatedUser } from "../hooks/useUsers";
 import { useTaskStore } from "../store/task.store";
-import { ModalDeleteTask } from "../components/UserPage/ModalDeleteTask";
+import { ModalDeleteTask } from "../components/user/ModalDeleteTask";
 import type { Task } from "../types/task.types";
 
 export default function Landing() {
