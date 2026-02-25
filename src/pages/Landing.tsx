@@ -1,51 +1,29 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../components/layout/AppLayout";
-import { CreateTaskModal } from "../components/user/ModalTask";
-import { useOpen } from "../hooks/useOpen";
-import { useAuthenticatedUser } from "../hooks/useUsers";
-import { useTaskStore } from "../store/task.store";
 import { ModalDeleteTask } from "../components/user/ModalDeleteTask";
+import { CreateTaskModal } from "../components/user/ModalTask";
+import { useTaskPage } from "../hooks/useTaskPage";
+import { useAuthenticatedUser } from "../hooks/useUsers";
 import type { Task } from "../types/task.types";
 
 export default function Landing() {
     const user = useAuthenticatedUser();
-    const { fetchTasks, tasks, createTask, updateTask, deleteTask } = useTaskStore();
-    const [taskEliminated, setTaskEliminated] = useState<Task | null>(null);
-
-    const openModalCreateTask = useOpen();
-    const openModalDeleteTask = useOpen();
-
-    useEffect(() => {
-        if (!user) return;
-        void fetchTasks(user.id_usuario);
-    }, [fetchTasks, user]);
-
+    const {
+        tasks,
+        createTask,
+        handleSubmitCompleteTask,
+        handleSubmitDeleteTask,
+        handleTaskDeletedModal,
+        handleTaskDeleted,
+        openModalCreateTask,
+        openModalDeleteTask,
+        taskEliminated,
+    } = useTaskPage();
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
-    const handleSubmitCompleteTask = async ({ id_tarea }: { id_tarea: string }) => {
-        await updateTask(id_tarea, true);
-    };
-
-    const handleSubmitDeleteTask = async () => {
-        if (!taskEliminated) return;
-
-        await deleteTask(taskEliminated.id_tarea);
-        handleTaskDeleted();
-    };
-
-    const handleTaskDeletedModal = (task: Task | null) => {
-        openModalDeleteTask.open();
-        setTaskEliminated(task);
-    };
-
-    const handleTaskDeleted = () => {
-        openModalDeleteTask.close();
-        setTaskEliminated(null);
-    };
     return (
         <AppLayout title={`Bienvenido, ${user.nombre_completo}`} descripcion="Aquí podrás gestionar tus tareas.">
             <motion.section
@@ -73,7 +51,7 @@ export default function Landing() {
                 <div className="flex flex-col gap-5">
                     {tasks.length === 0 && <p className="text-sm text-slate-400">No hay tareas registradas.</p>}
 
-                    {tasks.map((task) => {
+                    {tasks.map((task: Task) => {
                         const fecha = new Date(task.fecha_creacion).toLocaleDateString();
                         return (
                             <div
