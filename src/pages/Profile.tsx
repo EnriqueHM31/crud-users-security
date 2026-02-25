@@ -1,25 +1,19 @@
 import { motion } from "framer-motion";
-import { AppLayout } from "../components/layout/AppLayout";
-import { useAuthenticatedUser } from "../hooks/useUsers";
-import { Navigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
+import { Navigate } from "react-router-dom";
+import { AppLayout } from "../components/layout/AppLayout";
 import { ModalContraseña } from "../components/UserPage/ModalContraseña";
 import { useOpen } from "../hooks/useOpen";
+import { useAuthenticatedUser } from "../hooks/useUsers";
 import { formatearFechaMexico } from "../utils/conversiones";
-import { usePasswordActions } from "../hooks/usePassword";
 
 export default function Profile() {
     const user = useAuthenticatedUser();
     const openContraseña = useOpen();
-    const { changePassword } = usePasswordActions();
 
     if (!user) {
         return <Navigate to="/login" replace />;
     }
-
-    const handleSubmitChangePassword = ({ currentPassword, newPassword, id_usuario }: { currentPassword: string; newPassword: string; id_usuario: string }) => {
-        changePassword(currentPassword, newPassword, id_usuario);
-    };
 
     return (
         <AppLayout title="Profile">
@@ -72,7 +66,7 @@ export default function Profile() {
                 </div>
             </motion.section>
 
-            <ModalContraseña open={openContraseña.isOpen} close={openContraseña.close} onSubmit={handleSubmitChangePassword} />
+            <ModalContraseña open={openContraseña.isOpen} close={openContraseña.close} />
         </AppLayout>
     );
 }
