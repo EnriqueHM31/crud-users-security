@@ -8,7 +8,7 @@ interface PasswordState {
     successMessage: string | null;
 
     editPasswordUser: (id_usuario: string, password: string) => Promise<void>;
-    changePassword: (currentPassword: string, newPassword: string, id_usuario: string) => Promise<void>;
+    changePassword: (currentPassword: string, newPassword: string, id_usuario: string) => Promise<boolean>;
     requestResetEmail: (email: string) => Promise<boolean>;
     verifyOtp: (email: string, otp: string) => Promise<boolean>;
     resetPasswordLogin: (email: string, contrasena: string) => Promise<boolean>;
@@ -52,7 +52,7 @@ export const usePasswordStore = create<PasswordState>((set) => ({
         set({ isLoading: true, error: null, successMessage: null });
 
         try {
-            const { message } = await CambiarContrasena({
+            const { message, ok } = await CambiarContrasena({
                 contrasena_actual: currentPassword,
                 contrasena: newPassword,
                 id_usuario,
@@ -66,11 +66,13 @@ export const usePasswordStore = create<PasswordState>((set) => ({
             });
 
             toast.success(successMessage);
+            return ok;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "No se pudo cambiar la contraseña.";
 
             set({ error: errorMessage, successMessage: null });
             toast.error(errorMessage);
+            return false;
         } finally {
             set({ isLoading: false });
         }
