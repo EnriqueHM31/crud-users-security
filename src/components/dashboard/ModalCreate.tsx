@@ -129,7 +129,6 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     id="password"
                                     autoComplete="new-password"
                                     value={FormUser.contrasena}
-                                    readOnly
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-20 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
 
