@@ -3,6 +3,7 @@ import { useAuthenticatedUser } from "./useUsersStore";
 import { useTaskStore } from "../store/task.store";
 import { useOpen } from "./useOpen";
 import type { Task } from "../types/task.types";
+import type { UUID } from "../types/user.types";
 
 export function useTaskPage() {
     const user = useAuthenticatedUser();
@@ -17,7 +18,7 @@ export function useTaskPage() {
         void fetchTasks(user.id_usuario);
     }, [fetchTasks, user]);
 
-    const handleSubmitCompleteTask = async ({ id_tarea }: { id_tarea: string }) => {
+    const handleSubmitCompleteTask = async ({ id_tarea }: { id_tarea: UUID }) => {
         await updateTask(id_tarea, true);
     };
 
