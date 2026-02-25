@@ -30,7 +30,7 @@ export async function CambiarContrasena({
     id_usuario: string;
     contrasena: string;
     contrasena_actual: string;
-}): Promise<{ message: string }> {
+}): Promise<{ message: string; ok: boolean }> {
     try {
         const response = await fetch(`${API_URL_PASSWORD}/change/${id_usuario}`, {
             method: "PUT",
@@ -46,8 +46,8 @@ export async function CambiarContrasena({
 
         await handleApiError(response);
 
-        const { message } = await response.json();
-        return { message };
+        const { message, ok } = await response.json();
+        return { message, ok };
     } catch (e) {
         const errorMessage = getUserErrorMessage(e);
         throw new Error(errorMessage);
