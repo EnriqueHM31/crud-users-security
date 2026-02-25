@@ -44,3 +44,8 @@ export function validarCamposVacios(data: unknown, fieldNames?: Record<string, s
 
     return true;
 }
+
+export function esEmailValido(email: string): boolean {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
