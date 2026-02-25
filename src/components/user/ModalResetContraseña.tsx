@@ -6,6 +6,7 @@ import ModalReset from "../login/ModalReset";
 import ModalVerificar from "../login/ModalVerificar";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
 import { usePasswordStore } from "../../store/password.store";
+import { esEmailValido } from "../../utils/conversiones";
 
 type Step = "email" | "verify" | "reset";
 
@@ -14,44 +15,119 @@ interface ForgotPasswordModalProps {
     close: () => void;
 }
 
+const RESET_STORAGE_KEY = "reset_password_flow";
+
+/* ===============================
+   FUNCIÓN PARA OBTENER ESTADO INICIAL
+================================ */
+
+function getInitialResetState() {
+    if (typeof window === "undefined") {
+        return {
+            step: "email" as Step,
+            email: "",
+            secondsLeft: 300,
+        };
+    }
+
+    const saved = localStorage.getItem(RESET_STORAGE_KEY);
+
+    if (!saved) {
+        return {
+            step: "email" as Step,
+            email: "",
+            secondsLeft: 300,
+        };
+    }
+
+    try {
+        const parsed = JSON.parse(saved);
+
+        // 🔒 Validar que el flujo realmente esté activo
+        if (!parsed?.isActive) {
+            return {
+                step: "email" as Step,
+                email: "",
+                secondsLeft: 300,
+            };
+        }
+
+        return {
+            step: parsed.step ?? "email",
+            email: parsed.email ?? "",
+            secondsLeft: parsed.secondsLeft ?? 300,
+        };
+    } catch {
+        localStorage.removeItem(RESET_STORAGE_KEY);
+        return {
+            step: "email" as Step,
+            email: "",
+            secondsLeft: 300,
+        };
+    }
+}
+
+/* ===============================
+   COMPONENTE PRINCIPAL
+================================ */
+
 export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps) {
-    const [step, setStep] = useState<Step>("email");
-    const [email, setEmail] = useState("");
+    const initial = getInitialResetState();
+
+    const [step, setStep] = useState<Step>(initial.step);
+    const [email, setEmail] = useState(initial.email);
+    const [secondsLeft, setSecondsLeft] = useState(initial.secondsLeft);
     const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-    const [secondsLeft, setSecondsLeft] = useState(300);
     const [changePassword, setChangePassword] = useState({
         newPassword: "",
         confirmPassword: "",
     });
+
     const { requestResetEmail, verifyOtp, resetPasswordLogin } = usePasswordActions();
     const { isLoading } = usePasswordStore();
 
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    const resetFlow = () => {
-        if (timerRef.current) clearInterval(timerRef.current);
-        setStep("email");
-        setOtp(Array(6).fill(""));
-        setEmail("");
-        setChangePassword({ newPassword: "", confirmPassword: "" });
-        setSecondsLeft(300);
-    };
+    /* ===============================
+       PERSISTIR ESTADO
+    ================================ */
+    useEffect(() => {
+        if (!open) return; // 🔒 Solo persistir si la modal está abierta
 
-    // ---------- TIMER CONTROL ----------
+        const data = {
+            isActive: true,
+            step,
+            email,
+            secondsLeft,
+        };
+
+        localStorage.setItem(RESET_STORAGE_KEY, JSON.stringify(data));
+    }, [open, step, email, secondsLeft]);
+
+    useEffect(() => {
+        if (!open) return;
+
+        const saved = getInitialResetState();
+
+        setStep(saved.step);
+        setEmail(saved.email);
+        setSecondsLeft(saved.secondsLeft);
+    }, [open]);
+    /* ===============================
+    TIMER
+    ================================ */
+
     useEffect(() => {
         if (step !== "verify") return;
 
         timerRef.current = setInterval(() => {
-            setSecondsLeft((prev) => {
+            setSecondsLeft((prev: number) => {
                 if (prev <= 1) {
                     clearInterval(timerRef.current!);
                     toast.error("El código ha expirado.");
-
-                    // Solo cambia el paso aquí
                     setStep("email");
-                    setOtp(Array(6).fill(""));
-                    return 300; // 60 segundos
+                    return 300;
                 }
                 return prev - 1;
             });
@@ -65,12 +141,31 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         };
     }, [step]);
 
+    /* ===============================
+       RESET COMPLETO
+    ================================ */
+
+    const resetFlow = () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+
+        setStep("email");
+        setEmail("");
+        setOtp(Array(6).fill(""));
+        setChangePassword({ newPassword: "", confirmPassword: "" });
+        setSecondsLeft(300);
+
+        localStorage.removeItem(RESET_STORAGE_KEY);
+    };
+
     const handleClose = () => {
         resetFlow();
         close();
     };
 
-    // ---------- STEP 1 ----------
+    /* ===============================
+       STEP 1 - ENVIAR EMAIL
+    ================================ */
+
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -79,19 +174,19 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
             return;
         }
 
-        try {
-            const isSent = await requestResetEmail(email);
-
-            if (isSent) {
-                setStep("verify");
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error("No se pudo enviar el código.");
+        if (!esEmailValido(email)) {
+            toast.error("El correo electrónico no es válido.");
+            return;
         }
+
+        const isSent = await requestResetEmail(email);
+        if (isSent) setStep("verify");
     };
 
-    // ---------- STEP 2 ----------
+    /* ===============================
+       STEP 2 - VALIDAR OTP
+    ================================ */
+
     const handleOtpChange = (value: string, index: number) => {
         if (!/^\d?$/.test(value)) return;
 
@@ -117,18 +212,14 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
             return;
         }
 
-        try {
-            const isValid = await verifyOtp(email, code);
-
-            if (isValid) {
-                setStep("reset");
-            }
-        } catch {
-            toast.error("Código inválido.");
-        }
+        const isValid = await verifyOtp(email, code);
+        if (isValid) setStep("reset");
     };
 
-    // ---------- STEP 3 ----------
+    /* ===============================
+       STEP 3 - RESET PASSWORD
+    ================================ */
+
     const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -142,15 +233,12 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
             return;
         }
 
-        try {
-            const isReset = await resetPasswordLogin(email, changePassword.newPassword);
+        const isReset = await resetPasswordLogin(email, changePassword.newPassword);
 
-            if (isReset) {
-                toast.success("Contraseña actualizada correctamente.");
-                handleClose();
-            }
-        } catch {
-            toast.error("No se pudo actualizar la contraseña.");
+        if (isReset) {
+            toast.success("Contraseña actualizada correctamente.");
+            resetFlow();
+            close();
         }
     };
 
@@ -167,12 +255,10 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         <AnimatePresence>
             {open && (
                 <motion.div
-                    key="forgot-password-modal"
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={handleClose}
                 >
                     <motion.div
                         className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
@@ -183,7 +269,13 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                         onClick={(e) => e.stopPropagation()}
                     >
                         {step === "email" && (
-                            <ModalEmail email={email} handleChangeEmail={handleChangeEmail} handleSendCode={handleSendCode} isLoading={isLoading} />
+                            <ModalEmail
+                                email={email}
+                                handleChangeEmail={handleChangeEmail}
+                                handleSendCode={handleSendCode}
+                                isLoading={isLoading}
+                                close={handleClose}
+                            />
                         )}
 
                         {step === "verify" && (
@@ -194,6 +286,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                                 handleValidateCode={handleValidateCode}
                                 secondsLeft={secondsLeft}
                                 inputsRef={inputsRef}
+                                close={handleClose}
                             />
                         )}
 
@@ -203,6 +296,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                                 handleChangePassword={handleChangePassword}
                                 handleSubmit={handleResetPassword}
                                 isLoading={isLoading}
+                                close={close}
                             />
                         )}
                     </motion.div>
