@@ -3,35 +3,25 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { FiLock, FiUser } from "react-icons/fi";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Navigate, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { ModalResetContraseña } from "../components/user/ModalResetContraseña";
 import { obtenerRutaPorRolDefecto } from "../config/routes";
+import { initialState } from "../constants/initValues";
 import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
 import { useOpen } from "../hooks/useOpen";
 import { useAuthStore } from "../store/auth.store";
-
-interface LoginFormState {
-    username: string;
-    password: string;
-}
-
-const initialState: LoginFormState = {
-    username: "",
-    password: "",
-};
+import type { FormularioLogin } from "../types/auth.types";
+import { validarCamposVacios } from "../utils/conversiones";
 
 export default function Login() {
-    const [form, setForm] = useState<LoginFormState>(initialState);
+    const [formularioLogin, setFormularioLogin] = useState<FormularioLogin>(initialState);
+    const navigate = useNavigate();
 
     const isAuthenticated = useIsAuthenticated();
     const rol = useUserRole();
     const { login } = useAuthActions();
     const isLoading = useAuthLoading();
-    const navigate = useNavigate();
     const openResetContraseña = useOpen();
     const openShowPassword = useOpen();
-
-    // --- Lógica de Validación de Reglas ---
 
     if (isAuthenticated && rol) {
         return <Navigate to={obtenerRutaPorRolDefecto(rol)} replace />;
@@ -39,30 +29,24 @@ export default function Login() {
 
     const handleFieldChange = (event: ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
-        setForm((previous) => ({
+        setFormularioLogin((previous) => ({
             ...previous,
             [name]: value,
         }));
     };
 
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+    const handleSubmitLogin = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
 
-        const { username, password } = form;
+        const esValido = validarCamposVacios(formularioLogin, {
+            username: "Nombre de usuario",
+            password: "Contraseña",
+        });
+        if (!esValido) return;
+        const { username, password } = formularioLogin;
 
-        // Validaciones previas al Login
-        if (username.trim().length === 0) {
-            toast.error("El nombre de usuario no puede estar vacío.");
-            return;
-        }
-
-        if (password.trim().length === 0) {
-            toast.error("La contraseña no puede estar vacía.");
-            return;
-        }
-
-        // Si todo está bien, procedemos al login
         const isValidLogin = await login({ username, password });
+
         if (isValidLogin) {
             const user = useAuthStore.getState().userAuthenticated;
             const rolPostLogin = user?.rol ?? (user as { role?: "admin" | "user" })?.role ?? null;
@@ -84,8 +68,7 @@ export default function Login() {
                 </div>
                 <p className="mb-8 text-center text-sm text-slate-400">Acceso restringido para personal autorizado.</p>
 
-                <form className="grid gap-4" onSubmit={handleSubmit} noValidate>
-                    {/* Input Usuario */}
+                <form className="grid gap-4" onSubmit={handleSubmitLogin} noValidate>
                     <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 transition-colors focus-within:border-blue-500">
                         <FiUser className="min-w-[18px] text-slate-400" />
                         <input
@@ -94,7 +77,7 @@ export default function Login() {
                             name="username"
                             autoComplete="username"
                             placeholder="Nombre de usuario"
-                            value={form.username}
+                            value={formularioLogin.username}
                             onChange={handleFieldChange}
                         />
                     </label>
@@ -109,7 +92,7 @@ export default function Login() {
                                 name="password"
                                 autoComplete="current-password"
                                 placeholder="Contraseña"
-                                value={form.password}
+                                value={formularioLogin.password}
                                 onChange={handleFieldChange}
                             />
                         </label>
