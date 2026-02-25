@@ -3,8 +3,9 @@ import { useState, type ChangeEvent } from "react";
 import { FaTasks } from "react-icons/fa";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import type { Task } from "../../types/task.types";
 import { useAuthenticatedUser } from "../../hooks/useUsersStore";
+import type { TaskCreate } from "../../types/task.types";
+import type { UUID } from "../../types/user.types";
 
 interface CreateTaskInput {
     titulo: string;
@@ -14,12 +15,12 @@ interface CreateTaskInput {
 interface CreateTaskModalProps {
     open: boolean;
     close: () => void;
-    onSubmit: (userId: string, task: Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">) => void;
+    onSubmit: (userId: UUID, task: TaskCreate) => void;
 }
 
 export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps) {
     const userId = useAuthenticatedUser()?.id_usuario;
-    const [formTask, setFormTask] = useState<Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">>({
+    const [formTask, setFormTask] = useState<TaskCreate>({
         titulo: "",
         descripcion: "",
     });
@@ -39,7 +40,7 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
             return;
         }
 
-        onSubmit(userId || "", formTask);
+        onSubmit(userId as UUID, formTask);
         setFormTask({ titulo: "", descripcion: "" });
         close();
     };
