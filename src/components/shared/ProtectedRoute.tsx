@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useIsAuthenticated, useUserRole } from "../../hooks/useAuth";
+import { useIsAuthenticated, useUserRole } from "../../hooks/useAuthStore";
 import { RUTAS, obtenerRutaPorRolDefecto } from "../../config/routes";
 import type { ReactNode } from "react";
 import type { UserRole } from "../../types/user.types";

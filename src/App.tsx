@@ -2,7 +2,7 @@ import { useEffect, useState, Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 import { useAuthStore } from "./store/auth.store";
-import { useIsAuthenticated, useUserRole } from "./hooks/useAuth";
+import { useIsAuthenticated, useUserRole } from "./hooks/useAuthStore";
 import { obtenerRutaPorRolDefecto, RUTAS } from "./config/routes";
 
 const Login = lazy(() => import("./pages/Login"));

@@ -1,6 +1,6 @@
 import { FiGrid, FiUser } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
-import { useAuthenticatedUser } from "../../hooks/useUsers";
+import { useAuthenticatedUser } from "../../hooks/useUsersStore";
 import { ROLES } from "../../config/routes";
 
 export function Sidebar() {

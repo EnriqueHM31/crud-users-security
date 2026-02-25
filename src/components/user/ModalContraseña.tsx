@@ -4,10 +4,10 @@ import { z } from "zod";
 import { FaLock } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { toast } from "sonner";
-import { useCurrentUserId } from "../../hooks/useAuth";
+import { useCurrentUserId } from "../../hooks/useAuthStore";
 import { useOpen } from "../../hooks/useOpen";
 import PasswordValidate from "../layout/PasswordValidate";
-import { usePasswordActions } from "../../hooks/usePassword";
+import { usePasswordActions } from "../../hooks/usePasswordStore";
 
 interface ChangePasswordModalProps {
     open: boolean;

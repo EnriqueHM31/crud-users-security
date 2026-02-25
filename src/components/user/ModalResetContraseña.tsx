@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import ModalEmail from "../login/ModalEmail";
 import ModalReset from "../login/ModalReset";
 import ModalVerificar from "../login/ModalVerificar";
-import { usePasswordActions } from "../../hooks/usePassword";
+import { usePasswordActions } from "../../hooks/usePasswordStore";
 import { usePasswordStore } from "../../store/password.store";
 
 type Step = "email" | "verify" | "reset";

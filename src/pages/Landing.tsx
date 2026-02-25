@@ -4,7 +4,7 @@ import { AppLayout } from "../components/layout/AppLayout";
 import { ModalDeleteTask } from "../components/user/ModalDeleteTask";
 import { CreateTaskModal } from "../components/user/ModalTask";
 import { useTaskPage } from "../hooks/useTaskPage";
-import { useAuthenticatedUser } from "../hooks/useUsers";
+import { useAuthenticatedUser } from "../hooks/useUsersStore";
 import type { Task } from "../types/task.types";
 
 export default function Landing() {

@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { ModalResetContraseña } from "../components/user/ModalResetContraseña";
 import { obtenerRutaPorRolDefecto } from "../config/routes";
 import { initialState } from "../constants/initValues";
-import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
+import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuthStore";
 import { useOpen } from "../hooks/useOpen";
 import { useAuthStore } from "../store/auth.store";
 import type { FormularioLogin } from "../types/auth.types";

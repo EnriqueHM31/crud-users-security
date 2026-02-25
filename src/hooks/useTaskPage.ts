@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuthenticatedUser } from "./useUsers";
+import { useAuthenticatedUser } from "./useUsersStore";
 import { useTaskStore } from "../store/task.store";
 import { useOpen } from "./useOpen";
 import type { Task } from "../types/task.types";

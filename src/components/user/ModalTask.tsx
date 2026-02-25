@@ -4,7 +4,7 @@ import { FaTasks } from "react-icons/fa";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import type { Task } from "../../types/task.types";
-import { useAuthenticatedUser } from "../../hooks/useUsers";
+import { useAuthenticatedUser } from "../../hooks/useUsersStore";
 
 interface CreateTaskInput {
     titulo: string;

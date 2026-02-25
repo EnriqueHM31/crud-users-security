@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuthenticatedUser, useUserActions, useUsers } from "./useUsers";
+import { useAuthenticatedUser, useUserActions, useUsers } from "./useUsersStore";
 import { useState } from "react";
 import type { User, UserCreate, UserUpdate } from "../types/user.types";
 import { useEffect } from "react";

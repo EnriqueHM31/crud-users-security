@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaUser, FaUserShield } from "react-icons/fa";
 import { useOpen } from "../../hooks/useOpen";
-import { usePasswordActions } from "../../hooks/usePassword";
+import { usePasswordActions } from "../../hooks/usePasswordStore";
 import type { CreateUserInput, User } from "../../types/user.types";
 import { ModalEditConfirm } from "./ModalEditConfirm";
 import { ModalResetPassword } from "./ModalResetContrasena";

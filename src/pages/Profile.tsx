@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import { AppLayout } from "../components/layout/AppLayout";
 import { ModalContraseña } from "../components/user/ModalContraseña";
 import { useOpen } from "../hooks/useOpen";
-import { useAuthenticatedUser } from "../hooks/useUsers";
+import { useAuthenticatedUser } from "../hooks/useUsersStore";
 import { formatearFechaMexico } from "../utils/conversiones";
 
 export default function Profile() {
