@@ -47,7 +47,7 @@ export default function Landing() {
         setTaskEliminated(null);
     };
     return (
-        <AppLayout title={`Bienvenido, ${user.nombre_completo}`}>
+        <AppLayout title={`Bienvenido, ${user.nombre_completo}`} descripcion="Aquí podrás gestionar tus tareas.">
             <motion.section
                 className="rounded-xl border border-slate-800 bg-slate-950/80 p-6 shadow-xl"
                 initial={{ opacity: 0, y: 8 }}
