@@ -8,9 +8,10 @@ export interface ModalVerificarProps {
     secondsLeft: number;
     inputsRef: React.RefObject<(HTMLInputElement | null)[]>;
     isLoading: boolean;
+    close: () => void;
 }
 
-export default function ModalVerificar({ otp, handleOtpChange, handleValidateCode, secondsLeft, inputsRef, isLoading }: ModalVerificarProps) {
+export default function ModalVerificar({ otp, handleOtpChange, handleValidateCode, secondsLeft, inputsRef, isLoading, close }: ModalVerificarProps) {
     return (
         <div className="relative flex flex-col gap-4">
             <header>
@@ -43,17 +44,31 @@ export default function ModalVerificar({ otp, handleOtpChange, handleValidateCod
                 ))}
             </div>
 
-            <motion.button
-                initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
-                animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
-                whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
-                onClick={handleValidateCode}
-                disabled={isLoading}
-                className="w-full cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
-            >
-                {isLoading ? "Validando..." : "Validar código"}
-            </motion.button>
+            <div className="flex gap-3">
+                <motion.button
+                    initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                    animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                    whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                    onClick={handleValidateCode}
+                    disabled={isLoading}
+                    className="w-full flex-1 cursor-pointer rounded-lg bg-blue-800 py-2 font-semibold text-white hover:bg-blue-900"
+                >
+                    {isLoading ? "Validando..." : "Validar código"}
+                </motion.button>
+
+                <motion.button
+                    initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                    animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                    whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                    type="button"
+                    onClick={close}
+                    className="flex-1 cursor-pointer rounded-lg border border-slate-700 py-2 font-semibold text-slate-300 hover:border-slate-500"
+                >
+                    Cancelar
+                </motion.button>
+            </div>
         </div>
     );
 }
