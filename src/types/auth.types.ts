@@ -1,4 +1,4 @@
-import type { User } from "./user.types";
+import type { UserLogueado } from "./user.types";
 
 export interface LoginCredentials {
     username: string;
@@ -7,7 +7,7 @@ export interface LoginCredentials {
 
 export interface AuthState {
     isAuthenticated: boolean;
-    userAuthenticated: User | null;
+    userAuthenticated: UserLogueado | null;
     isLoading: boolean;
     error: string | null;
     successMessage: string | null;

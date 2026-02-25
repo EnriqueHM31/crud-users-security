@@ -1,5 +1,7 @@
+import type { UUID } from "./user.types";
+
 export interface Task {
-    id_tarea: string;
+    id_tarea: UUID;
     titulo: string;
     descripcion: string;
     id_usuario: string;
@@ -19,10 +21,12 @@ export interface TaskState {
     isLoading: boolean;
     error: string | null;
 
-    fetchTasks: (userId: string) => Promise<void>;
-    createTask: (userId: string, task: TaskCreate) => Promise<void>;
-    updateTask: (id: string, completado: boolean) => Promise<void>;
-    deleteTask: (id: string) => Promise<void>;
+    fetchTasks: (userId: UUID) => Promise<void>;
+    createTask: (userId: UUID, task: TaskCreate) => Promise<void>;
+    updateTask: (id: UUID, completado: boolean) => Promise<void>;
+    deleteTask: (id: UUID) => Promise<void>;
 
     clearError: () => void;
 }
+
+/* -----------------------------------------------------*/
