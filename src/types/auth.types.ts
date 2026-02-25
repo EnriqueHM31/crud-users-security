@@ -20,3 +20,10 @@ export interface AuthActions {
 }
 
 export type AuthStore = AuthState & AuthActions;
+
+/* -----------------------------------------------------*/
+
+export interface FormularioLogin {
+    username: string;
+    password: string;
+}
