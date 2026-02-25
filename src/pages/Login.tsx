@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { FiLock, FiUser } from "react-icons/fi";
+import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ModalResetContraseña } from "../components/UserPage/ModalResetContraseña";
 import { obtenerRutaPorRolDefecto } from "../config/routes";
 import { useAuthActions, useAuthLoading, useIsAuthenticated, useUserRole } from "../hooks/useAuth";
 import { useOpen } from "../hooks/useOpen";
 import { useAuthStore } from "../store/auth.store";
-import { ModalResetContraseña } from "../components/UserPage/ModalResetContraseña";
 
 interface LoginFormState {
     username: string;
@@ -21,12 +22,16 @@ const initialState: LoginFormState = {
 
 export default function Login() {
     const [form, setForm] = useState<LoginFormState>(initialState);
+
     const isAuthenticated = useIsAuthenticated();
     const rol = useUserRole();
     const { login } = useAuthActions();
     const isLoading = useAuthLoading();
     const navigate = useNavigate();
     const openResetContraseña = useOpen();
+    const openShowPassword = useOpen();
+
+    // --- Lógica de Validación de Reglas ---
 
     if (isAuthenticated && rol) {
         return <Navigate to={obtenerRutaPorRolDefecto(rol)} replace />;
@@ -34,7 +39,6 @@ export default function Login() {
 
     const handleFieldChange = (event: ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
-
         setForm((previous) => ({
             ...previous,
             [name]: value,
@@ -45,16 +49,19 @@ export default function Login() {
         event.preventDefault();
 
         const { username, password } = form;
+
+        // Validaciones previas al Login
         if (username.trim().length === 0) {
-            toast.error("El campo nombre de usuario no puede estar vacío.");
+            toast.error("El nombre de usuario no puede estar vacío.");
             return;
         }
 
         if (password.trim().length === 0) {
-            toast.error("El campo contraseña no puede estar vacío.");
+            toast.error("La contraseña no puede estar vacía.");
             return;
         }
 
+        // Si todo está bien, procedemos al login
         const isValidLogin = await login({ username, password });
         if (isValidLogin) {
             const user = useAuthStore.getState().userAuthenticated;
@@ -73,68 +80,97 @@ export default function Login() {
             >
                 <div className="mb-1 flex items-center justify-center gap-2">
                     <img src={"/logo.png"} alt="Logo" className="h-16 w-16 rounded-full" />
-                    <h1 className="text-3xl font-bold">Inicia sesion</h1>
+                    <h1 className="text-3xl font-bold">Portal Seguro</h1>
                 </div>
-                <p className="mb-10 text-center text-base text-slate-400">
-                    Un sistema de prueba de usuarios evalúa la autenticación y los permisos de acceso en un entorno seguro.{" "}
-                </p>
-                <form className="mt-4 grid gap-3" onSubmit={handleSubmit}>
-                    <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3">
+                <p className="mb-8 text-center text-sm text-slate-400">Acceso restringido para personal autorizado.</p>
+
+                <form className="grid gap-4" onSubmit={handleSubmit} noValidate>
+                    {/* Input Usuario */}
+                    <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 transition-colors focus-within:border-blue-500">
                         <FiUser className="min-w-[18px] text-slate-400" />
                         <input
                             className="w-full bg-transparent py-3 text-sm text-slate-50 outline-none placeholder:text-slate-500"
                             type="text"
-                            autoComplete="username"
-                            id="username"
                             name="username"
-                            placeholder="Username"
+                            autoComplete="username"
+                            placeholder="Nombre de usuario"
                             value={form.username}
                             onChange={handleFieldChange}
                         />
                     </label>
-                    <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3">
-                        <FiLock className="min-w-[18px] text-slate-400" />
-                        <input
-                            className="w-full bg-transparent py-3 text-sm text-slate-50 outline-none placeholder:text-slate-500"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            name="password"
-                            placeholder="Password"
-                            value={form.password}
-                            onChange={handleFieldChange}
-                        />
-                    </label>
-                    {/* Link intermedio */}
-                    <div className="my-2 flex justify-end">
+
+                    {/* Input Contraseña + Menú de Reglas */}
+                    <div className="relative grid gap-2">
+                        <label className="flex w-full items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 transition-colors focus-within:border-blue-500">
+                            <FiLock className="min-w-[18px] text-slate-400" />
+                            <input
+                                className="w-full bg-transparent py-3 text-sm text-slate-50 outline-none placeholder:text-slate-500"
+                                type={openShowPassword.isOpen ? "text" : "password"}
+                                name="password"
+                                autoComplete="current-password"
+                                placeholder="Contraseña"
+                                value={form.password}
+                                onChange={handleFieldChange}
+                            />
+                        </label>
                         <motion.button
                             initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
                             animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
                             whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                             whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                             type="button"
-                            className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 hover:underline"
-                            onClick={() => {
-                                openResetContraseña.open();
-                            }}
+                            title={openShowPassword.isOpen ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            className="absolute top-1/2 right-5 -translate-y-1/2 cursor-pointer text-slate-400 hover:text-blue-400"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => openShowPassword.toggle()}
                         >
-                            ¿Olvidaste la contraseña?
+                            {openShowPassword.isOpen ? <IoEye /> : <IoEyeOff />}
                         </motion.button>
                     </div>
+
+                    <div className="flex justify-end">
+                        <motion.button
+                            initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                            animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                            whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                            whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                            type="button"
+                            className="cursor-pointer text-xs text-blue-400 hover:text-blue-300 hover:underline"
+                            onClick={() => openResetContraseña.open()}
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </motion.button>
+                    </div>
+
                     <motion.button
-                        initial={{ scale: 0.95, y: 8 }}
-                        animate={{ scale: 1, y: 0 }}
-                        whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
-                        whileHover={{ scale: 0.95, transition: { duration: 0.2 } }}
-                        className="inline-flex w-full cursor-pointer items-center justify-center rounded-lg border border-blue-800 bg-blue-800 px-4 py-2.5 font-semibold text-slate-50 hover:-translate-y-0.5 hover:border-blue-900 hover:bg-blue-900"
+                        initial={{ scale: 0.9, opacity: 0, y: 40, transition: { duration: 0.3 } }}
+                        animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                        whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
+                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
+                        disabled={isLoading}
+                        className={`inline-flex w-full cursor-pointer items-center justify-center rounded-lg border px-4 py-2.5 font-semibold text-slate-50 ${"border-blue-950 bg-blue-800 hover:bg-blue-900"}`}
                         type="submit"
                     >
-                        {isLoading ? "Iniciando sesión..." : "Login"}
+                        {isLoading ? (
+                            <span className="flex items-center gap-2">
+                                <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    />
+                                </svg>
+                                Verificando...
+                            </span>
+                        ) : (
+                            "Iniciar Sesión"
+                        )}
                     </motion.button>
                 </form>
             </motion.div>
 
-            <ModalResetContraseña key="modal-reset-contrasena" open={openResetContraseña.isOpen} close={openResetContraseña.close} />
+            <ModalResetContraseña key="modal-reset" open={openResetContraseña.isOpen} close={openResetContraseña.close} />
         </div>
     );
 }
