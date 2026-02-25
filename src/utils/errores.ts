@@ -1,107 +1,106 @@
+/* ===============================
+   ERROR PERSONALIZADO HTTP
+================================ */
+
+/**
+ * Error que representa respuestas HTTP del backend.
+ * Permite guardar status y datos adicionales.
+ */
 export class ApiError extends Error {
+    // Código HTTP (400, 401, 500, etc.)
     public status: number;
+
+    // Información adicional enviada por el backend
     public data?: unknown;
 
     constructor(message: string, status: number, data?: unknown) {
-        super(message);
+        super(message); // Inicializa Error base
         this.name = "ApiError";
         this.status = status;
         this.data = data;
     }
 }
 
-export async function handleApiError(response: Response): Promise<Response> {
-    if (response.ok) {
-        return response;
-    }
+/* ===============================
+   MENSAJES POR DEFECTO HTTP
+================================ */
 
-    let errorMessage = "Error inesperado en la solicitud";
-    let errorData = null;
+/**
+ * Mensajes estándar si el backend no envía uno propio.
+ */
+const DEFAULT_HTTP_MESSAGES: Record<number, string> = {
+    400: "Solicitud inválida",
+    401: "No autorizado",
+    403: "Acceso prohibido",
+    404: "Recurso no encontrado",
+    500: "Error interno del servidor",
+};
 
-    try {
-        const data = await response.json();
-        errorData = data;
-        errorMessage = data.message || errorMessage;
-    } catch {
-        errorMessage = response.statusText || errorMessage;
-    }
+/* ===============================
+   OBTENER MENSAJE PARA EL USUARIO
+================================ */
 
-    switch (response.status) {
-        case 400:
-            errorMessage = errorMessage || "Solicitud inválida";
-            if (errorData?.message) {
-                errorMessage = errorData.message;
-                break;
-            }
-            break;
-        case 401:
-            if (errorData?.message) {
-                errorMessage = errorData.message;
-                break;
-            }
-            errorMessage = errorMessage || "No autorizado";
-            break;
-        case 403:
-            if (errorData?.message) {
-                errorMessage = errorData.message;
-                break;
-            }
-            errorMessage = errorMessage || "Acceso prohibido";
-            break;
-        case 404:
-            if (errorData?.message) {
-                errorMessage = errorData.message;
-                break;
-            }
-            errorMessage = errorMessage || "Recurso no encontrado";
-            break;
-        case 500:
-            if (errorData?.message) {
-                errorMessage = errorData.message;
-                break;
-            }
-            errorMessage = "Error interno del servidor";
-            break;
-    }
-
-    throw new ApiError(errorMessage, response.status, errorData);
-}
-
+/**
+ * Convierte cualquier error en un mensaje seguro para UI.
+ */
 export function getUserErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-        const message = error.message.toLowerCase();
-
-        // Error típico cuando el backend no responde
-        if (message.includes("failed to fetch")) {
-            return "No se pudo conectar con el servidor. Verifica tu conexión o intenta más tarde.";
-        }
-
-        // Error por CORS o red bloqueada
-        if (message.includes("networkerror")) {
-            return "Problema de red detectado. Revisa tu conexión a internet.";
-        }
-
-        // Timeout personalizado si lo usas
-        if (message.includes("timeout")) {
-            return "La solicitud tardó demasiado en responder. Intenta nuevamente.";
-        }
-
-        // Error interno del servidor
-        if (message.includes("internal server error")) {
-            return "Ocurrió un error en el servidor. Intenta más tarde.";
-        }
-
-        if (message.includes("invalid credentials")) {
-            return "Credenciales inválidas. Intenta nuevamente.";
-        }
-
-        if (message.includes("not found")) {
-            return "Algo fallo en la peticion. Intenta nuevamente.";
-        }
-
-        // Si viene mensaje del backend (ej. credenciales inválidas)
+    // Si es error HTTP controlado
+    if (error instanceof ApiError) {
         return error.message;
     }
 
-    return "Ocurrió un error inesperado. Intenta nuevamente.";
+    // Si es error de red o runtime
+    if (error instanceof Error) {
+        const message = error.message.toLowerCase();
+
+        // Servidor no responde
+        if (message.includes("failed to fetch")) {
+            return "No se pudo conectar con el servidor.";
+        }
+
+        // Problema de red
+        if (message.includes("networkerror")) {
+            return "Problema de red detectado.";
+        }
+
+        // Timeout
+        if (message.includes("timeout")) {
+            return "La solicitud tardó demasiado en responder.";
+        }
+
+        return error.message;
+    }
+
+    return "Ocurrió un error inesperado.";
+}
+
+/* ===============================
+   MANEJO DE RESPUESTAS HTTP
+================================ */
+
+/**
+ * Verifica si la respuesta fue exitosa.
+ * Si no, lanza un ApiError con mensaje adecuado.
+ */
+export async function handleApiError(response: Response): Promise<Response> {
+    // Si todo salió bien, retorna la respuesta
+    if (response.ok) return response;
+
+    let errorData: { message?: string } = {};
+
+    try {
+        // Intenta leer el body como JSON
+        errorData = await response.json();
+    } catch {
+        // Si no es JSON válido, se ignora
+    }
+
+    // Mensaje enviado por backend (si existe)
+    const backendMessage = typeof errorData?.message === "string" ? errorData.message : undefined;
+
+    // Mensaje por defecto según status
+    const fallbackMessage = DEFAULT_HTTP_MESSAGES[response.status] ?? response.statusText ?? "Error inesperado en la solicitud";
+
+    // Lanza error controlado
+    throw new ApiError(backendMessage ?? fallbackMessage, response.status, errorData);
 }

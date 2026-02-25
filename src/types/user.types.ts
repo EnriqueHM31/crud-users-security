@@ -1,4 +1,4 @@
-export type UUID = string;
+export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 export type UserRole = "admin" | "user";
 
@@ -24,3 +24,18 @@ export interface CreateUserInput {
 export interface UpdateUserInput extends Partial<CreateUserInput> {
     id: UUID;
 }
+
+export interface UserState {
+    users: User[];
+    isLoading: boolean;
+    error: string | null;
+    successMessage: string | null;
+    fetchUsers: () => Promise<void>;
+    createUser: (user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
+    updateUser: (id_usuario: UUID, user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => Promise<void>;
+    deleteUser: (id_usuario: UUID) => Promise<void>;
+}
+
+export type UserCreate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">;
+
+export type UserUpdate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">;

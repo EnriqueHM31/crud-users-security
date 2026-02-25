@@ -1,18 +1,7 @@
 import { toast } from "sonner";
 import { create } from "zustand";
 import { CrearUsuario, EditarUsuario, EliminarUsuario, ObtenerUsuarios } from "../services/user.service";
-import type { User, UUID } from "../types/user.types";
-
-interface UserState {
-    users: User[];
-    isLoading: boolean;
-    error: string | null;
-    successMessage: string | null;
-    fetchUsers: () => Promise<void>;
-    createUser: (user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
-    updateUser: (id_usuario: UUID, user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => Promise<void>;
-    deleteUser: (id_usuario: UUID) => Promise<void>;
-}
+import type { UserState, User } from "../types/user.types";
 
 export const useUserStore = create<UserState>((set) => ({
     users: [],

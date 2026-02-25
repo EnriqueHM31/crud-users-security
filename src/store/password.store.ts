@@ -1,18 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 import { resetearContrasena, CambiarContrasena, RequestResetEmail, VerificarOtp, resetearContrasenaLogin } from "../services/password.service";
-
-interface PasswordState {
-    isLoading: boolean;
-    error: string | null;
-    successMessage: string | null;
-
-    editPasswordUser: (id_usuario: string, password: string) => Promise<void>;
-    changePassword: (currentPassword: string, newPassword: string, id_usuario: string) => Promise<boolean>;
-    requestResetEmail: (email: string) => Promise<boolean>;
-    verifyOtp: (email: string, otp: string) => Promise<boolean>;
-    resetPasswordLogin: (email: string, contrasena: string) => Promise<boolean>;
-}
+import type { PasswordState } from "../types/password.types";
 
 export const usePasswordStore = create<PasswordState>((set) => ({
     isLoading: false,

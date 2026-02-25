@@ -1,20 +1,7 @@
-import { create } from "zustand";
 import { toast } from "sonner";
-import type { Task } from "../types/task.types";
-import { ObtenerTareasUser, CrearTarea, EditarTarea, EliminarTarea } from "../services/tarea.service";
-
-interface TaskState {
-    tasks: Task[];
-    isLoading: boolean;
-    error: string | null;
-
-    fetchTasks: (userId: string) => Promise<void>;
-    createTask: (userId: string, task: Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">) => Promise<void>;
-    updateTask: (id: string, completado: boolean) => Promise<void>;
-    deleteTask: (id: string) => Promise<void>;
-
-    clearError: () => void;
-}
+import { create } from "zustand";
+import { CrearTarea, EditarTarea, EliminarTarea, ObtenerTareasUser } from "../services/tarea.service";
+import type { TaskState } from "../types/task.types";
 
 export const useTaskStore = create<TaskState>((set, get) => ({
     tasks: [],

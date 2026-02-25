@@ -3,13 +3,7 @@ import { toast } from "sonner";
 import { CerrarSesion, Login } from "../services/auth.service";
 import { API_URL_AUTH } from "../config";
 import type { AuthStore } from "../types/auth.types";
-import type { UserRole } from "../types/user.types";
-
-function normalizeUser(data: Record<string, unknown> | null): AuthStore["userAuthenticated"] {
-    if (!data) return null;
-    const rol = (data.rol ?? data.role) as UserRole | undefined;
-    return { ...data, rol } as AuthStore["userAuthenticated"];
-}
+import { normalizeUser } from "../utils/auth.util";
 
 export const useAuthStore = create<AuthStore>((set) => ({
     isAuthenticated: false,
