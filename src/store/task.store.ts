@@ -27,7 +27,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         set({ isLoading: true, error: null });
 
         try {
-            const { data } = await CrearTarea({ id: userId, task });
+            const { data } = await CrearTarea({ id_usuario: userId, task });
 
             set({
                 tasks: [data, ...get().tasks],
