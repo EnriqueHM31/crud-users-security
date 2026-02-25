@@ -1,8 +1,8 @@
 import { API_URL_AUTH } from "../config";
-import type { User } from "../types/user.types";
+import type { User, UserLogueado, UserRole } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
-export async function Login({ username, password }: { username: string; password: string }): Promise<{ data: Omit<User, "id" | "password">; message: string }> {
+export async function Login({ username, password }: { username: string; password: string }): Promise<{ data: UserLogueado; message: string }> {
     try {
         const response = await fetch(API_URL_AUTH + "/login", {
             method: "POST",
@@ -26,16 +26,16 @@ export async function Login({ username, password }: { username: string; password
 export async function Registrarse({
     username,
     name,
-    password,
+    contrasena,
     email,
     role,
 }: {
     username: string;
     name: string;
-    password: string;
+    contrasena: string;
     email: string;
-    role: "admin" | "user";
-}): Promise<{ data: Omit<User, "id, password">; message: string }> {
+    role: UserRole;
+}): Promise<{ data: Omit<User, "id, contrasena">; message: string }> {
     try {
         const response = await fetch(API_URL_AUTH + "/user", {
             method: "POST",
@@ -43,7 +43,7 @@ export async function Registrarse({
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, name, password, email, role }),
+            body: JSON.stringify({ username, name, contrasena, email, role }),
         });
 
         await handleApiError(response);
@@ -72,7 +72,7 @@ export async function CerrarSesion(): Promise<{ message: string }> {
     }
 }
 
-export async function CheckSession(): Promise<{ data: User }> {
+export async function CheckSession(): Promise<{ data: UserLogueado }> {
     try {
         const response = await fetch(API_URL_AUTH + "/verify", {
             method: "POST",

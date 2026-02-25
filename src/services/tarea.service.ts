@@ -1,8 +1,9 @@
 import { API_URL_TASK } from "../config";
-import type { Task } from "../types/task.types";
+import type { Task, TaskCreate } from "../types/task.types";
+import type { UUID } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
-export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data: Task[] }> {
+export async function ObtenerTareasUser({ id }: { id: UUID }): Promise<{ data: Task[] }> {
     try {
         const response = await fetch(`${API_URL_TASK}/user/${id}`, {
             method: "GET",
@@ -19,13 +20,7 @@ export async function ObtenerTareasUser({ id }: { id: string }): Promise<{ data:
     }
 }
 
-export async function CrearTarea({
-    id,
-    task,
-}: {
-    id: string;
-    task: Omit<Task, "id_tarea" | "fecha_creacion" | "completada" | "id_usuario">;
-}): Promise<{ data: Task }> {
+export async function CrearTarea({ id_usuario, task }: { id_usuario: UUID; task: TaskCreate }): Promise<{ data: Task }> {
     try {
         const response = await fetch(`${API_URL_TASK}/`, {
             method: "POST",
@@ -35,7 +30,7 @@ export async function CrearTarea({
             },
 
             body: JSON.stringify({
-                id_usuario: id,
+                id_usuario,
                 ...task,
             }),
         });
@@ -50,7 +45,7 @@ export async function CrearTarea({
     }
 }
 
-export async function EditarTarea({ id_tarea, completado }: { id_tarea: string; completado: boolean }): Promise<{ data: Task }> {
+export async function EditarTarea({ id_tarea, completado }: { id_tarea: UUID; completado: boolean }): Promise<{ data: Task }> {
     try {
         const response = await fetch(`${API_URL_TASK}/${id_tarea}`, {
             method: "PUT",
@@ -71,7 +66,7 @@ export async function EditarTarea({ id_tarea, completado }: { id_tarea: string; 
     }
 }
 
-export async function EliminarTarea({ id }: { id: string }): Promise<{ message: string }> {
+export async function EliminarTarea({ id }: { id: UUID }): Promise<{ message: string }> {
     try {
         const response = await fetch(`${API_URL_TASK}/${id}`, {
             method: "DELETE",

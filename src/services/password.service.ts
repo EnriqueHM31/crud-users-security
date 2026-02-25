@@ -1,7 +1,8 @@
 import { API_URL_PASSWORD } from "../config";
+import type { UUID } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
-export async function resetearContrasena({ id_usuario, contrasena }: { id_usuario: string; contrasena: string }): Promise<{ message: string }> {
+export async function resetearContrasena({ id_usuario, contrasena }: { id_usuario: UUID; contrasena: string }): Promise<{ message: string }> {
     try {
         const response = await fetch(`${API_URL_PASSWORD}/reset/${id_usuario}`, {
             method: "PUT",
@@ -27,7 +28,7 @@ export async function CambiarContrasena({
     contrasena,
     contrasena_actual,
 }: {
-    id_usuario: string;
+    id_usuario: UUID;
     contrasena: string;
     contrasena_actual: string;
 }): Promise<{ message: string; ok: boolean }> {

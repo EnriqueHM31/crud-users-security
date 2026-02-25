@@ -39,3 +39,5 @@ export interface UserState {
 export type UserCreate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">;
 
 export type UserUpdate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">;
+
+export type UserLogueado = Omit<User, "contrasena" | "fecha_actualizacion">;

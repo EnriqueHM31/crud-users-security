@@ -1,5 +1,5 @@
 import { API_URL_USER } from "../config";
-import type { User } from "../types/user.types";
+import type { User, UserCreate, UserUpdate, UUID } from "../types/user.types";
 import { getUserErrorMessage, handleApiError } from "../utils/errores";
 
 export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string }> {
@@ -21,13 +21,7 @@ export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string
     }
 }
 
-export async function EditarUsuario({
-    id_usuario,
-    user,
-}: {
-    id_usuario: string;
-    user: Omit<User, "id_usuario | fecha_creacion | fecha_actualizacion">;
-}): Promise<{ data: User; message: string }> {
+export async function EditarUsuario({ id_usuario, user }: { id_usuario: UUID; user: UserUpdate }): Promise<{ data: User; message: string }> {
     try {
         const response = await fetch(`${API_URL_USER}/${id_usuario}`, {
             method: "PUT",
@@ -48,11 +42,7 @@ export async function EditarUsuario({
     }
 }
 
-export async function CrearUsuario({
-    user,
-}: {
-    user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">;
-}): Promise<{ data: User; message: string }> {
+export async function CrearUsuario({ user }: { user: UserCreate }): Promise<{ data: User; message: string }> {
     try {
         const response = await fetch(`${API_URL_USER}`, {
             method: "POST",
@@ -73,7 +63,7 @@ export async function CrearUsuario({
     }
 }
 
-export async function EliminarUsuario({ id_usuario }: { id_usuario: string }): Promise<{ message: string }> {
+export async function EliminarUsuario({ id_usuario }: { id_usuario: UUID }): Promise<{ message: string }> {
     try {
         const response = await fetch(`${API_URL_USER}/${id_usuario}`, {
             method: "DELETE",
