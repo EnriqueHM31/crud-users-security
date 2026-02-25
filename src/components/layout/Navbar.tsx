@@ -3,15 +3,22 @@ import { motion } from "framer-motion";
 
 interface NavbarProps {
     title: string;
+    descripcion?: string;
     onLogout: () => void;
 }
 
-export function Navbar({ title, onLogout }: NavbarProps) {
+export function Navbar({ title, onLogout, descripcion }: NavbarProps) {
     return (
         <header className="flex items-center justify-between border-b border-slate-800 bg-slate-950/70 px-5 py-4 backdrop-blur-sm">
-            <motion.h1 className="text-2xl font-semibold" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
-                {title}
-            </motion.h1>
+            <div className="flex flex-col gap-2">
+                <motion.h1 className="text-2xl font-semibold capitalize" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+                    {title}
+                </motion.h1>
+
+                <motion.p className="text-sm text-slate-400" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+                    {descripcion}
+                </motion.p>
+            </div>
             <motion.button
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
