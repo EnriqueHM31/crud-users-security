@@ -7,6 +7,7 @@ import type { User, UserUpdate, UUID } from "../../types/user.types";
 import { ModalEditConfirm } from "./ModalEditConfirm";
 import { ModalResetPassword } from "./ModalResetContrasena";
 import InputTelefono from "./InputTelefono";
+import { useUserActions } from "../../hooks/useUsersStore";
 
 export interface EditUser extends UserUpdate {
     id_usuario: UUID;
@@ -15,14 +16,14 @@ interface EditUserModalProps {
     open: boolean;
     close: () => void;
     selectedUser: EditUser;
-    onSubmit: (payload: EditUser) => void;
 }
 
-export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModalProps) {
+export function ModalEdit({ open, close, selectedUser }: EditUserModalProps) {
     const [values, setValues] = useState<EditUser>(selectedUser);
     const confirmModal = useOpen();
     const passwordModal = useOpen();
     const { editPasswordUser } = usePasswordActions();
+    const { updateUser } = useUserActions();
 
     useEffect(() => {
         setValues(selectedUser);
@@ -41,10 +42,12 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
         confirmModal.open();
     };
 
-    const handleConfirm = () => {
-        onSubmit(values);
-        confirmModal.close();
-        close();
+    const handleConfirm = async () => {
+        const ok = await updateUser(values.id_usuario, values);
+        if (ok) {
+            confirmModal.close();
+            close();
+        }
     };
 
     const handleConfirmResetPassword = (password: string) => {
