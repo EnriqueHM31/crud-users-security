@@ -1,6 +1,6 @@
 import { API_URL_USER } from "../config";
 import type { User, UserCreate, UserUpdate, UUID } from "../types/user.types";
-import { getUserErrorMessage, handleApiError } from "../utils/errores";
+import { MensajeAmigableParaUsuario, handleApiError } from "../utils/errores";
 
 export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string }> {
     try {
@@ -16,7 +16,7 @@ export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string
         const { data, message } = await response.json();
         return { data, message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -37,7 +37,7 @@ export async function EditarUsuario({ id_usuario, user }: { id_usuario: UUID; us
         const { data, message } = await response.json();
         return { data, message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -58,7 +58,7 @@ export async function CrearUsuario({ user }: { user: UserCreate }): Promise<{ da
         const { data, message } = await response.json();
         return { data, message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -75,7 +75,7 @@ export async function EliminarUsuario({ id_usuario }: { id_usuario: UUID }): Pro
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
