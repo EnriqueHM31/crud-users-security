@@ -64,7 +64,8 @@ export default function Login() {
 
         if (isValidLogin) {
             const user = useAuthStore.getState().userAuthenticated;
-            const rolPostLogin = user?.rol ?? (user as { role?: "admin" | "user" })?.role ?? null;
+            if (!user) return;
+            const rolPostLogin = user.rol;
             navigate(obtenerRutaPorRolDefecto(rolPostLogin), { replace: true });
         }
     };
