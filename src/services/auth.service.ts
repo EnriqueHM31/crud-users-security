@@ -1,6 +1,6 @@
 import { API_URL_AUTH } from "../config";
 import type { User, UserLogueado, UserRole } from "../types/user.types";
-import { getUserErrorMessage, handleApiError } from "../utils/errores";
+import { MensajeAmigableParaUsuario, handleApiError } from "../utils/errores";
 
 export async function Login({ username, password }: { username: string; password: string }): Promise<{ data: UserLogueado; message: string }> {
     try {
@@ -18,7 +18,7 @@ export async function Login({ username, password }: { username: string; password
         const { data, message } = await response.json();
         return { data, message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -50,7 +50,7 @@ export async function Registrarse({
         const { data, message } = await response.json();
         return { data, message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -67,7 +67,7 @@ export async function CerrarSesion(): Promise<{ message: string }> {
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -84,7 +84,7 @@ export async function CheckSession(): Promise<{ data: UserLogueado }> {
         const { data } = await response.json();
         return { data };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
