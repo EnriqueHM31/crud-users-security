@@ -5,35 +5,36 @@ import { IoEye, IoEyeOff } from "react-icons/io5";
 import { LuShuffle } from "react-icons/lu";
 import { toast } from "sonner";
 import { useOpen } from "../../hooks/useOpen";
-import type { User } from "../../types/user.types";
+import type { UserCreate } from "../../types/user.types";
 import { generarContraseñaSegura } from "../../utils/conversiones";
+import InputTelefono from "./InputTelefono";
 
 interface UserModalProps {
     open: boolean;
     close: () => void;
-    onSubmit: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => void;
+    onSubmit: (payload: UserCreate) => void;
 }
 
-const emptyFormUser: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion"> = {
+const emptyFormUser: UserCreate = {
     nombre_usuario: "",
     nombre_completo: "",
     correo_electronico: "",
+    telefono: "",
     contrasena: "",
     rol: "user",
 };
 
 export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
-    const [FormUser, setFormUser] = useState<Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">>(emptyFormUser);
+    const [FormUser, setFormUser] = useState<UserCreate>(emptyFormUser);
 
     const openPassword = useOpen();
 
-    const handleFieldChange =
-        (field: keyof Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-            setFormUser((prev) => ({
-                ...prev,
-                [field]: event.target.value,
-            }));
-        };
+    const handleFieldChange = (field: keyof UserCreate) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormUser((prev) => ({
+            ...prev,
+            [field]: event.target.value,
+        }));
+    };
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -52,6 +53,8 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
         setFormUser(emptyFormUser);
         close();
     };
+
+    console.log({ FormUser });
     return (
         <AnimatePresence>
             {open && (
@@ -60,7 +63,7 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={() => close()}
+                    onClick={() => handleCloseCreateUser()}
                 >
                     <motion.div
                         className="flex h-screen w-full max-w-md flex-col rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
@@ -120,6 +123,15 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                 />
                             </div>
 
+                            <InputTelefono
+                                placeholder="Telefono"
+                                id="telefono"
+                                autoComplete="tel"
+                                value={FormUser.telefono}
+                                onChange={handleFieldChange("telefono")}
+                                className="w-full rounded-lg border border-slate-800 bg-slate-900 text-sm text-slate-100 outline-none focus:border-blue-500"
+                            />
+
                             <div className="relative">
                                 <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
 
@@ -128,6 +140,7 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
                                     placeholder="Contraseña"
                                     id="password"
                                     autoComplete="new-password"
+                                    onChange={handleFieldChange("contrasena")}
                                     value={FormUser.contrasena}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-20 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
