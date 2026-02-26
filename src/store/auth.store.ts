@@ -1,7 +1,6 @@
-import { create } from "zustand";
 import { toast } from "sonner";
-import { CerrarSesion, Login } from "../services/auth.service";
-import { API_URL_AUTH } from "../config";
+import { create } from "zustand";
+import { CerrarSesion, CheckSession, Login } from "../services/auth.service";
 import type { AuthStore } from "../types/auth.types";
 import { normalizeUser } from "../utils/auth.util";
 
@@ -70,12 +69,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         set({ isLoading: true });
 
         try {
-            const response = await fetch(API_URL_AUTH + "/verify", {
-                method: "POST",
-                credentials: "include",
-            });
-
-            const { data } = await response.json();
+            const { data } = await CheckSession();
             const user = data ? normalizeUser(data) : null;
 
             set({
