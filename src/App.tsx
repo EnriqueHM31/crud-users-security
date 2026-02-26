@@ -4,6 +4,8 @@ import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 import { useAuthStore } from "./store/auth.store";
 import { useIsAuthenticated, useUserRole } from "./hooks/useAuthStore";
 import { obtenerRutaPorRolDefecto, RUTAS } from "./config/routes";
+import { ROLES } from "./config/routes";
+import type { UserRole } from "./types/user.types";
 
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -45,7 +47,7 @@ function App() {
                 <Route
                     path={RUTAS.PANEL_ADMIN}
                     element={
-                        <ProtectedRoute allowedRoles={["admin"]}>
+                        <ProtectedRoute allowedRoles={[ROLES.ADMIN as UserRole]}>
                             <Dashboard />
                         </ProtectedRoute>
                     }
@@ -54,7 +56,7 @@ function App() {
                 <Route
                     path={RUTAS.PANEL_USUARIO}
                     element={
-                        <ProtectedRoute allowedRoles={["user"]}>
+                        <ProtectedRoute allowedRoles={[ROLES.USER as UserRole]}>
                             <Landing />
                         </ProtectedRoute>
                     }
@@ -63,7 +65,7 @@ function App() {
                 <Route
                     path={RUTAS.PERFIL}
                     element={
-                        <ProtectedRoute allowedRoles={["admin", "user"]}>
+                        <ProtectedRoute allowedRoles={[ROLES.ADMIN as UserRole, ROLES.USER as UserRole]}>
                             <Profile />
                         </ProtectedRoute>
                     }
