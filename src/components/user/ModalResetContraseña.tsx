@@ -7,7 +7,7 @@ import ModalVerificar from "../login/ModalVerificar";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
 import { usePasswordStore } from "../../store/password.store";
 import { esEmailValido } from "../../utils/conversiones";
-import { RESET_STORAGE_KEY } from "../../constants";
+import { RESET_STORAGE_KEY, STEPS_RESET_PASSWORD_LOGIN } from "../../constants";
 import { getInitialResetState } from "../../features/password.feature";
 
 type Step = "email" | "verify" | "reset";
@@ -17,16 +17,31 @@ interface ForgotPasswordModalProps {
     close: () => void;
 }
 
-export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps) {
-    const initial = getInitialResetState();
+interface ResetState {
+    step: Step;
+    email: string;
+    secondsLeft: number;
+    otp: string[];
+    changePassword: {
+        newPassword: string;
+        confirmPassword: string;
+    };
+}
 
-    const [step, setStep] = useState<Step>(initial.step);
-    const [email, setEmail] = useState(initial.email);
-    const [secondsLeft, setSecondsLeft] = useState(initial.secondsLeft);
-    const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-    const [changePassword, setChangePassword] = useState({
-        newPassword: "",
-        confirmPassword: "",
+export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps) {
+    const [state, setState] = useState<ResetState>(() => {
+        const initial = getInitialResetState();
+
+        return {
+            step: initial.step,
+            email: initial.email,
+            secondsLeft: initial.secondsLeft,
+            otp: Array(6).fill(""),
+            changePassword: {
+                newPassword: "",
+                confirmPassword: "",
+            },
+        };
     });
 
     const { requestResetEmail, verifyOtp, resetPasswordLogin } = usePasswordActions();
@@ -36,37 +51,44 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     /* ===============================
-       PERSISTIR ESTADO
+       PERSISTENCIA
     ================================ */
     useEffect(() => {
         if (!open) return;
 
         const data = {
             isActive: true,
-            step,
-            email,
-            secondsLeft,
+            step: state.step,
+            email: state.email,
+            secondsLeft: state.secondsLeft,
         };
 
         localStorage.setItem(RESET_STORAGE_KEY, JSON.stringify(data));
-    }, [open, step, email, secondsLeft]);
+    }, [open, state.step, state.email, state.secondsLeft]);
 
     /* ===============================
-    TIMER
+       TIMER
     ================================ */
-
     useEffect(() => {
-        if (step !== "verify") return;
+        if (state.step !== STEPS_RESET_PASSWORD_LOGIN.VERIFY) return;
 
         timerRef.current = setInterval(() => {
-            setSecondsLeft((prev: number) => {
-                if (prev <= 1) {
+            setState((prev) => {
+                if (prev.secondsLeft <= 1) {
                     clearInterval(timerRef.current!);
                     toast.error("El código ha expirado.");
-                    setStep("email");
-                    return 300;
+
+                    return {
+                        ...prev,
+                        step: STEPS_RESET_PASSWORD_LOGIN.EMAIL as typeof prev.step,
+                        secondsLeft: 300,
+                    };
                 }
-                return prev - 1;
+
+                return {
+                    ...prev,
+                    secondsLeft: prev.secondsLeft - 1,
+                };
             });
         }, 1000);
 
@@ -76,20 +98,24 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                 timerRef.current = null;
             }
         };
-    }, [step]);
+    }, [state.step]);
 
     /* ===============================
        RESET COMPLETO
     ================================ */
-
     const resetFlow = () => {
         if (timerRef.current) clearInterval(timerRef.current);
 
-        setStep("email");
-        setEmail("");
-        setOtp(Array(6).fill(""));
-        setChangePassword({ newPassword: "", confirmPassword: "" });
-        setSecondsLeft(300);
+        setState({
+            step: STEPS_RESET_PASSWORD_LOGIN.EMAIL as typeof state.step,
+            email: "",
+            secondsLeft: 300,
+            otp: Array(6).fill(""),
+            changePassword: {
+                newPassword: "",
+                confirmPassword: "",
+            },
+        });
 
         localStorage.removeItem(RESET_STORAGE_KEY);
     };
@@ -100,36 +126,53 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
     };
 
     /* ===============================
-       STEP 1 - ENVIAR EMAIL
+       STEP 1 - EMAIL
     ================================ */
-
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!email.trim()) {
+        if (!state.email.trim()) {
             toast.error("Ingresa tu correo electrónico.");
             return;
         }
 
-        if (!esEmailValido(email)) {
+        if (!esEmailValido(state.email)) {
             toast.error("El correo electrónico no es válido.");
             return;
         }
 
-        const isSent = await requestResetEmail(email);
-        if (isSent) setStep("verify");
+        const isSent = await requestResetEmail(state.email);
+
+        if (isSent) {
+            setState((prev) => ({
+                ...prev,
+                step: STEPS_RESET_PASSWORD_LOGIN.VERIFY as typeof prev.step,
+            }));
+        }
+    };
+
+    const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setState((prev) => ({
+            ...prev,
+            email: e.target.value,
+        }));
     };
 
     /* ===============================
-       STEP 2 - VALIDAR OTP
+       STEP 2 - OTP
     ================================ */
-
     const handleOtpChange = (value: string, index: number) => {
         if (!/^\d?$/.test(value)) return;
 
-        const newOtp = [...otp];
-        newOtp[index] = value;
-        setOtp(newOtp);
+        setState((prev) => {
+            const newOtp = [...prev.otp];
+            newOtp[index] = value;
+
+            return {
+                ...prev,
+                otp: newOtp,
+            };
+        });
 
         if (value && index < 5) {
             inputsRef.current[index + 1]?.focus();
@@ -137,55 +180,65 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
     };
 
     const handleValidateCode = async () => {
-        const code = otp.join("");
+        const code = state.otp.join("");
 
         if (code.length !== 6) {
             toast.error("Ingresa el código completo.");
             return;
         }
 
-        if (secondsLeft <= 0) {
+        if (state.secondsLeft <= 0) {
             toast.error("El código expiró.");
             return;
         }
 
-        const isValid = await verifyOtp(email, code);
-        if (isValid) setStep("reset");
+        const isValid = await verifyOtp(state.email, code);
+
+        if (isValid) {
+            setState((prev) => ({
+                ...prev,
+                step: STEPS_RESET_PASSWORD_LOGIN.RESET as typeof prev.step,
+            }));
+        }
     };
 
     /* ===============================
        STEP 3 - RESET PASSWORD
     ================================ */
+    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+
+        setState((prev) => ({
+            ...prev,
+            changePassword: {
+                ...prev.changePassword,
+                [name]: value,
+            },
+        }));
+    };
 
     const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!changePassword.newPassword || !changePassword.confirmPassword) {
+        const { newPassword, confirmPassword } = state.changePassword;
+
+        if (!newPassword || !confirmPassword) {
             toast.error("Todos los campos son obligatorios.");
             return;
         }
 
-        if (changePassword.newPassword !== changePassword.confirmPassword) {
+        if (newPassword !== confirmPassword) {
             toast.error("Las contraseñas no coinciden.");
             return;
         }
 
-        const isReset = await resetPasswordLogin(email, changePassword.newPassword);
+        const isReset = await resetPasswordLogin(state.email, newPassword);
 
         if (isReset) {
             toast.success("Contraseña actualizada correctamente.");
             resetFlow();
             close();
         }
-    };
-
-    const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-    };
-
-    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setChangePassword({ ...changePassword, [name]: value });
     };
 
     return (
@@ -205,9 +258,9 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {step === "email" && (
+                        {state.step === STEPS_RESET_PASSWORD_LOGIN.EMAIL && (
                             <ModalEmail
-                                email={email}
+                                email={state.email}
                                 handleChangeEmail={handleChangeEmail}
                                 handleSendCode={handleSendCode}
                                 isLoading={isLoading}
@@ -215,25 +268,25 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
                             />
                         )}
 
-                        {step === "verify" && (
+                        {state.step === STEPS_RESET_PASSWORD_LOGIN.VERIFY && (
                             <ModalVerificar
-                                otp={otp}
+                                otp={state.otp}
                                 isLoading={isLoading}
                                 handleOtpChange={handleOtpChange}
                                 handleValidateCode={handleValidateCode}
-                                secondsLeft={secondsLeft}
+                                secondsLeft={state.secondsLeft}
                                 inputsRef={inputsRef}
                                 close={handleClose}
                             />
                         )}
 
-                        {step === "reset" && (
+                        {state.step === STEPS_RESET_PASSWORD_LOGIN.RESET && (
                             <ModalReset
-                                changePassword={changePassword}
+                                changePassword={state.changePassword}
                                 handleChangePassword={handleChangePassword}
                                 handleSubmit={handleResetPassword}
                                 isLoading={isLoading}
-                                close={close}
+                                close={handleClose}
                             />
                         )}
                     </motion.div>

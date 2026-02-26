@@ -48,7 +48,6 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
     };
 
     const handleConfirmResetPassword = (password: string) => {
-        console.log({ values });
         editPasswordUser(values.id_usuario, password);
         confirmModal.close();
         close();

@@ -51,14 +51,11 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
         }
 
         const validation = changePasswordSchema.safeParse(formChangePassword as Record<string, unknown>);
-        console.log({ validation });
 
         if (!validation.success) {
             toast.error(validation?.error?.issues[0]?.message ?? "La nueva contraseña no cumple las reglas de seguridad.");
             return;
         }
-
-        console.log(validation.data);
 
         const isValid = await changePassword(validation.data.currentPassword, validation.data.newPassword, userId);
 
