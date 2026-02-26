@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { create } from "zustand";
 import { CrearUsuario, EditarUsuario, EliminarUsuario, ObtenerUsuarios } from "../services/user.service";
-import type { UserState, User } from "../types/user.types";
+import type { UserCreate, UserState, UserUpdate } from "../types/user.types";
 
 export const useUserStore = create<UserState>((set) => ({
     users: [],
@@ -23,10 +23,14 @@ export const useUserStore = create<UserState>((set) => ({
         }
     },
 
-    createUser: async (user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => {
+    createUser: async (user: UserCreate) => {
         set({ isLoading: true, error: null, successMessage: null });
         try {
-            const { data: newUser, message } = await CrearUsuario({ user });
+            const { data: newUser, message, ok } = await CrearUsuario({ user });
+
+            if (!ok || !newUser) {
+                throw new Error(message ?? "Error al crear usuario");
+            }
             const successMessage = message || "Usuario creado correctamente.";
             set((state) => ({
                 users: [...state.users, newUser],
@@ -34,10 +38,12 @@ export const useUserStore = create<UserState>((set) => ({
                 successMessage,
             }));
             toast.success(successMessage);
+            return true;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "No se pudo crear el usuario.";
             set({ error: errorMessage, successMessage: null });
             toast.error(errorMessage);
+            return false;
         } finally {
             set({ isLoading: false });
         }
@@ -45,10 +51,18 @@ export const useUserStore = create<UserState>((set) => ({
     updateUser: async (id_usuario, user) => {
         set({ isLoading: true, error: null, successMessage: null });
         try {
-            const { data: updatedUser, message } = await EditarUsuario({
+            const {
+                data: updatedUser,
+                message,
+                ok,
+            } = await EditarUsuario({
                 id_usuario,
-                user: user as Omit<User, "id_usuario | fecha_creacion | fecha_actualizacion">,
+                user: user as UserUpdate,
             });
+
+            if (!ok || !updatedUser) {
+                throw new Error(message ?? "Error al actualizar usuario");
+            }
             const successMessage = message || "Usuario actualizado correctamente.";
             set((state) => ({
                 users: state.users.map((user) => (user.id_usuario === id_usuario ? updatedUser : user)),
@@ -56,10 +70,12 @@ export const useUserStore = create<UserState>((set) => ({
                 successMessage,
             }));
             toast.success(successMessage);
+            return true;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "No se pudo actualizar el usuario.";
             set({ error: errorMessage, successMessage: null });
             toast.error(errorMessage);
+            return false;
         } finally {
             set({ isLoading: false });
         }
