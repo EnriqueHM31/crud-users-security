@@ -5,7 +5,7 @@ import { AppLayout } from "../components/layout/AppLayout";
 import { ModalContraseña } from "../components/user/ModalContraseña";
 import { useOpen } from "../hooks/useOpen";
 import { useAuthenticatedUser } from "../hooks/useUsersStore";
-import { formatearFechaMexico } from "../utils/conversiones";
+import { formatearFechaMexico, formatearTelefonoE164 } from "../utils/conversiones";
 
 export default function Profile() {
     const user = useAuthenticatedUser();
@@ -61,7 +61,7 @@ export default function Profile() {
 
                     <div>
                         <span className="text-sm text-slate-400">Telefono</span>
-                        <p className="mt-1">{user.telefono}</p>
+                        <p className="mt-1">{formatearTelefonoE164(user.telefono)}</p>
                     </div>
 
                     <div>
