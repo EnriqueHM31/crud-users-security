@@ -8,11 +8,11 @@ import { useOpen } from "../../hooks/useOpen";
 import type { UserCreate } from "../../types/user.types";
 import { generarContraseñaSegura } from "../../utils/conversiones";
 import InputTelefono from "./InputTelefono";
+import { useUserActions } from "../../hooks/useUsersStore";
 
 interface UserModalProps {
     open: boolean;
     close: () => void;
-    onSubmit: (payload: UserCreate) => void;
 }
 
 const emptyFormUser: UserCreate = {
@@ -24,9 +24,10 @@ const emptyFormUser: UserCreate = {
     rol: "user",
 };
 
-export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
+export function ModalCreate({ open, close }: UserModalProps) {
     const [FormUser, setFormUser] = useState<UserCreate>(emptyFormUser);
 
+    const { createUser } = useUserActions();
     const openPassword = useOpen();
 
     const handleFieldChange = (field: keyof UserCreate) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -36,7 +37,7 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
         }));
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!FormUser.nombre_usuario.trim() || !FormUser.nombre_completo.trim() || !FormUser.correo_electronico.trim() || !FormUser.contrasena.trim()) {
@@ -44,9 +45,13 @@ export function ModalCreate({ open, onSubmit, close }: UserModalProps) {
             return;
         }
 
-        onSubmit(FormUser);
-        setFormUser(emptyFormUser);
-        close();
+        const ok = await createUser(FormUser);
+        console.log(ok);
+
+        if (ok) {
+            setFormUser(emptyFormUser);
+            close();
+        }
     };
 
     const handleCloseCreateUser = () => {
