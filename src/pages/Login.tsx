@@ -11,7 +11,7 @@ import { useOpen } from "../hooks/useOpen";
 import { useAuthStore } from "../store/auth.store";
 import type { FormularioLogin } from "../types/auth.types";
 import { validarCamposVacios } from "../utils/conversiones";
-const RESET_STORAGE_KEY = "reset_password_flow";
+import { RESET_STORAGE_KEY } from "../constants";
 
 export default function Login() {
     const [formularioLogin, setFormularioLogin] = useState<FormularioLogin>(initialState);

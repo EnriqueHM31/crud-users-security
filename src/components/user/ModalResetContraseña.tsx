@@ -7,6 +7,7 @@ import ModalVerificar from "../login/ModalVerificar";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
 import { usePasswordStore } from "../../store/password.store";
 import { esEmailValido } from "../../utils/conversiones";
+import { RESET_STORAGE_KEY } from "../../constants";
 
 type Step = "email" | "verify" | "reset";
 
@@ -14,8 +15,6 @@ interface ForgotPasswordModalProps {
     open: boolean;
     close: () => void;
 }
-
-const RESET_STORAGE_KEY = "reset_password_flow";
 
 /* ===============================
    FUNCIÓN PARA OBTENER ESTADO INICIAL
@@ -105,15 +104,6 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
         localStorage.setItem(RESET_STORAGE_KEY, JSON.stringify(data));
     }, [open, step, email, secondsLeft]);
 
-    useEffect(() => {
-        if (!open) return;
-
-        const saved = getInitialResetState();
-
-        setStep(saved.step);
-        setEmail(saved.email);
-        setSecondsLeft(saved.secondsLeft);
-    }, [open]);
     /* ===============================
     TIMER
     ================================ */
