@@ -3,9 +3,10 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaUser, FaUserShield } from "react-icons/fa";
 import { useOpen } from "../../hooks/useOpen";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
-import type { CreateUserInput, User, UserUpdate, UUID } from "../../types/user.types";
+import type { User, UserUpdate, UUID } from "../../types/user.types";
 import { ModalEditConfirm } from "./ModalEditConfirm";
 import { ModalResetPassword } from "./ModalResetContrasena";
+import InputTelefono from "./InputTelefono";
 
 export interface EditUser extends UserUpdate {
     id_usuario: UUID;
@@ -27,13 +28,12 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
         setValues(selectedUser);
     }, [selectedUser]);
 
-    const handleFieldChange =
-        (field: keyof Omit<User & CreateUserInput, "fecha_creacion" | "fecha_actualizacion">) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-            setValues((prev) => ({
-                ...prev,
-                [field]: event.target.value,
-            }));
-        };
+    const handleFieldChange = (field: keyof User) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setValues((prev) => ({
+            ...prev,
+            [field]: event.target.value,
+        }));
+    };
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -125,6 +125,15 @@ export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModal
                                         className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 text-sm text-slate-100 focus:border-blue-500"
                                     />
                                 </div>
+
+                                <InputTelefono
+                                    placeholder="Telefono"
+                                    id="telefono"
+                                    autoComplete="tel"
+                                    value={values.telefono}
+                                    onChange={handleFieldChange("telefono")}
+                                    className="w-full rounded-lg border border-slate-800 bg-slate-900 text-sm text-slate-100 outline-none focus:border-blue-500"
+                                />
 
                                 <div className="relative">
                                     <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
