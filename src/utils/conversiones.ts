@@ -25,7 +25,6 @@ export const formatoTiempo = (totalSeconds: number) => {
 };
 
 export function validarCamposVacios(data: unknown, fieldNames?: Record<string, string>): boolean {
-    // Verifica que sea un objeto válido
     if (typeof data !== "object" || data === null) {
         toast.error("Datos inválidos.");
         return false;
