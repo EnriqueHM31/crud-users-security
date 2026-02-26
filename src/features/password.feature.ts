@@ -1,11 +1,11 @@
-import { RESET_STORAGE_KEY } from "../constants";
+import { RESET_STORAGE_KEY, STEPS_RESET_PASSWORD_LOGIN } from "../constants";
 
 type Step = "email" | "verify" | "reset";
 
 export function getInitialResetState() {
     if (typeof window === "undefined") {
         return {
-            step: "email" as Step,
+            step: STEPS_RESET_PASSWORD_LOGIN.EMAIL as Step,
             email: "",
             secondsLeft: 300,
         };
@@ -15,7 +15,7 @@ export function getInitialResetState() {
 
     if (!saved) {
         return {
-            step: "email" as Step,
+            step: STEPS_RESET_PASSWORD_LOGIN.EMAIL as Step,
             email: "",
             secondsLeft: 300,
         };
@@ -27,21 +27,21 @@ export function getInitialResetState() {
         // 🔒 Validar que el flujo realmente esté activo
         if (!parsed?.isActive) {
             return {
-                step: "email" as Step,
+                step: STEPS_RESET_PASSWORD_LOGIN.EMAIL as Step,
                 email: "",
                 secondsLeft: 300,
             };
         }
 
         return {
-            step: parsed.step ?? "email",
+            step: parsed.step ?? (STEPS_RESET_PASSWORD_LOGIN.EMAIL as Step),
             email: parsed.email ?? "",
             secondsLeft: parsed.secondsLeft ?? 300,
         };
     } catch {
         localStorage.removeItem(RESET_STORAGE_KEY);
         return {
-            step: "email" as Step,
+            step: STEPS_RESET_PASSWORD_LOGIN.EMAIL as Step,
             email: "",
             secondsLeft: 300,
         };
