@@ -21,7 +21,7 @@ export async function ObtenerUsuarios(): Promise<{ data: User[]; message: string
     }
 }
 
-export async function EditarUsuario({ id_usuario, user }: { id_usuario: UUID; user: UserUpdate }): Promise<{ data: User; message: string }> {
+export async function EditarUsuario({ id_usuario, user }: { id_usuario: UUID; user: UserUpdate }): Promise<{ data: User; message: string; ok: boolean }> {
     try {
         const response = await fetch(`${API_URL_USER}/${id_usuario}`, {
             method: "PUT",
@@ -34,15 +34,15 @@ export async function EditarUsuario({ id_usuario, user }: { id_usuario: UUID; us
 
         await handleApiError(response);
 
-        const { data, message } = await response.json();
-        return { data, message };
+        const { data, message, ok } = await response.json();
+        return { data, message, ok };
     } catch (e) {
         const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
 
-export async function CrearUsuario({ user }: { user: UserCreate }): Promise<{ data: User; message: string }> {
+export async function CrearUsuario({ user }: { user: UserCreate }): Promise<{ data: User; message: string; ok: boolean }> {
     try {
         const response = await fetch(`${API_URL_USER}`, {
             method: "POST",
@@ -55,8 +55,8 @@ export async function CrearUsuario({ user }: { user: UserCreate }): Promise<{ da
 
         await handleApiError(response);
 
-        const { data, message } = await response.json();
-        return { data, message };
+        const { data, message, ok } = await response.json();
+        return { data, message, ok };
     } catch (e) {
         const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
