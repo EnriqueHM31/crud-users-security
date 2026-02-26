@@ -12,3 +12,100 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+select,
+::picker(select) {
+    appearance: base-select;
+    @apply bg-slate-900 text-white hover:bg-slate-500;
+}
+
+select {
+    padding: 10px;
+    transition: 0.4s;
+}
+
+select::picker-icon {
+    color: #999999;
+    transition: 0.4s rotate;
+}
+
+select:open::picker-icon {
+    rotate: 180deg;
+}
+
+::picker(select) {
+    @apply border border-slate-700;
+}
+
+option {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+
+    border: 2px solid #2a2929;
+    transition: 0.4s;
+    @apply bg-slate-900;
+    padding: 10px;
+}
+
+option:first-of-type {
+    border-radius: 8px 8px 0 0;
+}
+
+option:last-of-type {
+    border-radius: 0 0 8px 8px;
+}
+
+::picker(select) {
+    border-radius: 7px;
+}
+
+option:not(option:last-of-type) {
+    border-bottom: none;
+}
+
+option:hover,
+option:focus {
+    @apply bg-blue-800;
+}
+
+option .icon {
+    font-size: 1.6rem;
+    text-box: trim-both cap alphabetic;
+}
+
+selectedcontent .icon {
+    display: none;
+}
+
+option:checked {
+    @apply bg-slate-500;
+    font-weight: bold;
+    background-color: #2a2929;
+}
+
+option::checkmark {
+    order: 1;
+    margin-left: auto;
+    content: "✅";
+}
+
+::picker(select) {
+    opacity: 0;
+    transition: all 0.4s allow-discrete;
+}
+
+::picker(select):popover-open {
+    opacity: 1;
+}
+
+@starting-style {
+    ::picker(select):popover-open {
+        opacity: 0;
+    }
+}
+
+::picker(select) {
+    top: calc(anchor(bottom) + 5px);
+    left: anchor(0%);
+}
