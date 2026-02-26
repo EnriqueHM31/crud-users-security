@@ -60,6 +60,11 @@ export default function Profile() {
                     </div>
 
                     <div>
+                        <span className="text-sm text-slate-400">Telefono</span>
+                        <p className="mt-1">{user.telefono}</p>
+                    </div>
+
+                    <div>
                         <span className="text-sm text-slate-400">Fecha de creación</span>
                         <p className="mt-1">{formatearFechaMexico(user.fecha_creacion)}</p>
                     </div>
