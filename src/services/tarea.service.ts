@@ -1,7 +1,7 @@
 import { API_URL_TASK } from "../config";
 import type { Task, TaskCreate } from "../types/task.types";
 import type { UUID } from "../types/user.types";
-import { getUserErrorMessage, handleApiError } from "../utils/errores";
+import { MensajeAmigableParaUsuario, handleApiError } from "../utils/errores";
 
 export async function ObtenerTareasUser({ id }: { id: UUID }): Promise<{ data: Task[] }> {
     try {
@@ -15,7 +15,7 @@ export async function ObtenerTareasUser({ id }: { id: UUID }): Promise<{ data: T
         const { data } = await response.json();
         return { data };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -40,7 +40,7 @@ export async function CrearTarea({ id_usuario, task }: { id_usuario: UUID; task:
         const { data } = await response.json();
         return { data };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -61,7 +61,7 @@ export async function EditarTarea({ id_tarea, completado }: { id_tarea: UUID; co
         const { data } = await response.json();
         return { data };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -78,7 +78,7 @@ export async function EliminarTarea({ id }: { id: UUID }): Promise<{ message: st
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
