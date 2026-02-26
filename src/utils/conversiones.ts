@@ -51,22 +51,22 @@ export function esEmailValido(email: string): boolean {
 export function formatearTelefonoE164(phone: string): string {
     if (!phone) return "";
 
-    // Asegurarse que empieza con +
-    if (!phone.startsWith("+")) return phone;
+    // Limpiar todo excepto números
+    const numericOnly = phone.replace(/\D/g, "");
 
-    // Extraer solo números después del +
-    const numeric = phone.slice(1).replace(/\D/g, "");
+    // Ladas conocidas (ordénalas por longitud descendente para evitar conflictos)
+    const countryCodes = ["52", "57", "84", "44", "31", "49", "1", "7"];
 
-    // Ladas conocidas (ajusta según necesites)
-    const countryCodes = ["52", "1", "57", "7", "84", "44", "31", "49"];
+    const foundCode = countryCodes.find((code) => numericOnly.startsWith(code));
 
-    const foundCode = countryCodes.find((code) => numeric.startsWith(code));
+    if (!foundCode) {
+        // Si no encuentra lada conocida, devolver con +
+        return `+${numericOnly}`;
+    }
 
-    if (!foundCode) return phone;
+    const nationalNumber = numericOnly.slice(foundCode.length);
 
-    const nationalNumber = numeric.slice(foundCode.length);
-
-    // Ejemplo formato genérico 3-3-4
+    // Formato genérico 3-3-4 (ajustable)
     const formattedNational = nationalNumber.replace(/(\d{3})(\d{3})(\d{0,4})/, (_, a, b, c) => [a, b, c].filter(Boolean).join(" "));
 
     return `+${foundCode} ${formattedNational}`;
