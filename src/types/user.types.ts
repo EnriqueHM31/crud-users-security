@@ -30,7 +30,7 @@ export interface UserState {
     error: string | null;
     successMessage: string | null;
     fetchUsers: () => Promise<void>;
-    createUser: (user: UserCreate) => Promise<void>;
-    updateUser: (id_usuario: UUID, user: UserUpdate) => Promise<void>;
+    createUser: (user: UserCreate) => Promise<boolean>;
+    updateUser: (id_usuario: UUID, user: UserUpdate) => Promise<boolean>;
     deleteUser: (id_usuario: UUID) => Promise<void>;
 }
