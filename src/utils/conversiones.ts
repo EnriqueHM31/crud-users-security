@@ -3,11 +3,10 @@ import { toast } from "sonner";
 export function formatearFechaMexico(isoDate: string): string {
     return new Intl.DateTimeFormat("es-MX", {
         timeZone: "America/Mexico_City",
-        dateStyle: "long",
-        timeStyle: "medium",
+        dateStyle: "short",
+        timeStyle: "short",
     }).format(new Date(isoDate));
 }
-
 export function generarContraseñaSegura(length = 10): string {
     const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}<>?";
 
@@ -47,4 +46,28 @@ export function validarCamposVacios(data: unknown, fieldNames?: Record<string, s
 export function esEmailValido(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
+}
+
+export function formatearTelefonoE164(phone: string): string {
+    if (!phone) return "";
+
+    // Asegurarse que empieza con +
+    if (!phone.startsWith("+")) return phone;
+
+    // Extraer solo números después del +
+    const numeric = phone.slice(1).replace(/\D/g, "");
+
+    // Ladas conocidas (ajusta según necesites)
+    const countryCodes = ["52", "1", "57", "7", "84", "44", "31", "49"];
+
+    const foundCode = countryCodes.find((code) => numeric.startsWith(code));
+
+    if (!foundCode) return phone;
+
+    const nationalNumber = numeric.slice(foundCode.length);
+
+    // Ejemplo formato genérico 3-3-4
+    const formattedNational = nationalNumber.replace(/(\d{3})(\d{3})(\d{0,4})/, (_, a, b, c) => [a, b, c].filter(Boolean).join(" "));
+
+    return `+${foundCode} ${formattedNational}`;
 }
