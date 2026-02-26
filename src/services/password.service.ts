@@ -1,6 +1,6 @@
 import { API_URL_PASSWORD } from "../config";
 import type { UUID } from "../types/user.types";
-import { getUserErrorMessage, handleApiError } from "../utils/errores";
+import { MensajeAmigableParaUsuario, handleApiError } from "../utils/errores";
 
 export async function resetearContrasena({ id_usuario, contrasena }: { id_usuario: UUID; contrasena: string }): Promise<{ message: string }> {
     try {
@@ -18,7 +18,7 @@ export async function resetearContrasena({ id_usuario, contrasena }: { id_usuari
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -50,7 +50,7 @@ export async function CambiarContrasena({
         const { message, ok } = await response.json();
         return { message, ok };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -71,7 +71,7 @@ export async function RequestResetEmail({ email }: { email: string }): Promise<{
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -95,7 +95,7 @@ export async function VerificarOtp({ email, otp }: { email: string; otp: string 
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
@@ -119,7 +119,7 @@ export async function resetearContrasenaLogin({ email, contrasena }: { email: st
         const { message } = await response.json();
         return { message };
     } catch (e) {
-        const errorMessage = getUserErrorMessage(e);
+        const errorMessage = MensajeAmigableParaUsuario(e);
         throw new Error(errorMessage);
     }
 }
