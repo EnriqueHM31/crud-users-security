@@ -8,28 +8,31 @@ type CountryCodeOption = {
 
 type PhoneInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> & {
     countryCodes?: CountryCodeOption[];
-    value: string; // +5227312662823
+    value: string; // ejemplo: +522731266282
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const countryCodes = [
+const defaultCountryCodes: CountryCodeOption[] = [
     { code: "+52", label: "MX" },
     { code: "+1", label: "US" },
-    { code: "+57", label: "BR" },
+    { code: "+57", label: "CO" },
     { code: "+7", label: "RU" },
-    { code: "+84", label: "UA" },
+    { code: "+84", label: "VN" },
 ];
 
-export default function InputTelefono({ value, onChange, ...inputProps }: PhoneInputProps) {
-    // 🔎 Separar lada y número desde el valor completo
-    const found = countryCodes.find((c) => value?.startsWith(c.code));
+export default function InputTelefono({ value = "", onChange, countryCodes = defaultCountryCodes, ...inputProps }: PhoneInputProps) {
+    const numeric = value.replace(/\D/g, "");
 
-    const selectedCode = found?.code ?? countryCodes[0].code;
-    const phoneNumber = found ? value.replace(found.code, "") : (value ?? "");
+    // Últimos 10 dígitos = número nacional
+    const nationalNumber = numeric.length > 10 ? numeric.slice(-10) : numeric;
 
-    // 🔁 Cuando cambia lada
+    // Lo demás = código país
+    const countryNumeric = numeric.length > 10 ? numeric.slice(0, -10) : "";
+
+    const selectedCode = countryCodes.find((c) => c.code.replace("+", "") === countryNumeric)?.code ?? countryCodes[0].code;
+
     const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newFullValue = e.target.value + phoneNumber;
+        const newFullValue = e.target.value + nationalNumber;
 
         const syntheticEvent = {
             target: {
@@ -41,9 +44,7 @@ export default function InputTelefono({ value, onChange, ...inputProps }: PhoneI
         onChange(syntheticEvent);
     };
 
-    // 🔁 Cuando cambia número
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Eliminar todo lo que no sea número
         const numericValue = e.target.value.replace(/\D/g, "");
 
         const newFullValue = selectedCode + numericValue;
@@ -64,14 +65,7 @@ export default function InputTelefono({ value, onChange, ...inputProps }: PhoneI
                 <FaPhone className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
 
                 <div className="flex w-full items-center pl-10">
-                    <select
-                        id="country-code"
-                        name="country-code"
-                        autoComplete="country"
-                        value={selectedCode}
-                        onChange={handleCodeChange}
-                        className="relative w-fit cursor-pointer appearance-none py-2.5 pr-6 outline-none"
-                    >
+                    <select value={selectedCode} onChange={handleCodeChange} className="w-fit cursor-pointer appearance-none py-2.5 pr-6 outline-none">
                         {countryCodes.map((c) => (
                             <option key={c.code} value={c.code}>
                                 {c.label} {c.code}
@@ -81,12 +75,10 @@ export default function InputTelefono({ value, onChange, ...inputProps }: PhoneI
 
                     <input
                         type="tel"
-                        id={inputProps.id}
                         inputMode="numeric"
                         pattern="[0-9]*"
                         name={inputProps.name}
-                        autoComplete={inputProps.autoComplete}
-                        value={phoneNumber}
+                        value={nationalNumber}
                         onChange={handleNumberChange}
                         className="ml-3 flex-1 bg-transparent focus:outline-none"
                     />
