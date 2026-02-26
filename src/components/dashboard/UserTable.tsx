@@ -1,21 +1,19 @@
 import { motion } from "framer-motion";
 import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
-import type { User, UserCreate, UserUpdate } from "../../types/user.types";
+import { useOpen } from "../../hooks/useOpen";
+import type { User } from "../../types/user.types";
+import { formatearFechaMexico, formatearTelefonoE164 } from "../../utils/conversiones";
 import { ModalCreate } from "./ModalCreate";
 import { ModalEdit } from "./ModalEdit";
-import { useOpen } from "../../hooks/useOpen";
-import { formatearFechaMexico, formatearTelefonoE164 } from "../../utils/conversiones";
 
 interface UserTableProps {
     users: User[];
     onEdit: (user: User | null) => void;
     onDelete: (user: User) => void;
     editingUser?: User | null;
-    handleCreateUser: (payload: UserCreate) => Promise<void>;
-    handleEditSave: (payload: UserUpdate) => Promise<void>;
 }
 
-export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUser, handleEditSave }: UserTableProps) {
+export function UserTable({ users, onEdit, onDelete, editingUser }: UserTableProps) {
     const openModalCreate = useOpen();
     const openModalEdit = useOpen();
 
@@ -31,7 +29,7 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
 
     return (
         <>
-            <ModalCreate open={openModalCreate.isOpen} close={openModalCreate.close} onSubmit={handleCreateUser} />
+            <ModalCreate open={openModalCreate.isOpen} close={openModalCreate.close} />
 
             {editingUser && (
                 <ModalEdit
@@ -45,7 +43,6 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                         correo_electronico: editingUser.correo_electronico,
                         rol: editingUser.rol,
                     }}
-                    onSubmit={handleEditSave}
                 />
             )}
 
