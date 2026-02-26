@@ -7,33 +7,15 @@ export interface User {
     nombre_usuario: string;
     nombre_completo: string;
     correo_electronico: string;
+    telefono: string;
     fecha_creacion: string;
     fecha_actualizacion: string;
     rol: UserRole;
     contrasena: string;
 }
 
-export interface CreateUserInput {
-    username: string;
-    name: string;
-    password: string;
-    email: string;
-    rol?: UserRole;
-}
-
-export interface UpdateUserInput extends Partial<CreateUserInput> {
+export interface UpdateUserInput extends Partial<User> {
     id: UUID;
-}
-
-export interface UserState {
-    users: User[];
-    isLoading: boolean;
-    error: string | null;
-    successMessage: string | null;
-    fetchUsers: () => Promise<void>;
-    createUser: (user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
-    updateUser: (id_usuario: UUID, user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => Promise<void>;
-    deleteUser: (id_usuario: UUID) => Promise<void>;
 }
 
 export type UserCreate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">;
@@ -41,3 +23,14 @@ export type UserCreate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_act
 export type UserUpdate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">;
 
 export type UserLogueado = Omit<User, "contrasena" | "fecha_actualizacion">;
+
+export interface UserState {
+    users: User[];
+    isLoading: boolean;
+    error: string | null;
+    successMessage: string | null;
+    fetchUsers: () => Promise<void>;
+    createUser: (user: UserCreate) => Promise<void>;
+    updateUser: (id_usuario: UUID, user: UserUpdate) => Promise<void>;
+    deleteUser: (id_usuario: UUID) => Promise<void>;
+}
