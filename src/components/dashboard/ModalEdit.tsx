@@ -3,11 +3,11 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaUser, FaUserShield } from "react-icons/fa";
 import { useOpen } from "../../hooks/useOpen";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
+import { useUserActions } from "../../hooks/useUsersStore";
 import type { User, UserUpdate, UUID } from "../../types/user.types";
+import InputTelefono from "./InputTelefono";
 import { ModalEditConfirm } from "./ModalEditConfirm";
 import { ModalResetPassword } from "./ModalResetContrasena";
-import InputTelefono from "./InputTelefono";
-import { useUserActions } from "../../hooks/useUsersStore";
 
 export interface EditUser extends UserUpdate {
     id_usuario: UUID;
