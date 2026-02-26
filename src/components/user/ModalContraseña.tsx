@@ -1,42 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { z } from "zod";
 import { FaLock } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { toast } from "sonner";
 import { useCurrentUserId } from "../../hooks/useAuthStore";
 import { useOpen } from "../../hooks/useOpen";
-import PasswordValidate from "../layout/PasswordValidate";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
+import { changePasswordSchema } from "../../utils/schemas.util";
+import PasswordValidate from "../layout/PasswordValidate";
 
 interface ChangePasswordModalProps {
     open: boolean;
     close: () => void;
 }
-
-/* ===========================
-   SCHEMA VALIDACIÓN
-=========================== */
-
-const changePasswordSchema = z
-    .object({
-        currentPassword: z.string().min(1, "La contraseña actual es obligatoria"),
-        newPassword: z
-            .string()
-            .min(8, "Debe tener mínimo 8 caracteres")
-            .regex(/[A-Z]/, "Debe incluir una mayúscula [A-Z]")
-            .regex(/[0-9]/, "Debe incluir un número [0-9]")
-            .regex(/[@$!%*?&#]/, "Debe incluir un carácter especial [@$!%*?&#]"),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-        message: "Las nuevas contraseñas no coinciden",
-        path: ["confirmPassword"],
-    });
-
-/* ===========================
-   COMPONENTE
-=========================== */
 
 export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
     const userId = useCurrentUserId();
@@ -87,7 +63,6 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
 
         const isValid = await changePassword(validation.data.currentPassword, validation.data.newPassword, userId);
 
-        console.log({ isValid });
         if (isValid) {
             resetForm();
             close();

@@ -8,6 +8,7 @@ import { usePasswordActions } from "../../hooks/usePasswordStore";
 import { usePasswordStore } from "../../store/password.store";
 import { esEmailValido } from "../../utils/conversiones";
 import { RESET_STORAGE_KEY } from "../../constants";
+import { getInitialResetState } from "../../features/password.feature";
 
 type Step = "email" | "verify" | "reset";
 
@@ -15,60 +16,6 @@ interface ForgotPasswordModalProps {
     open: boolean;
     close: () => void;
 }
-
-/* ===============================
-   FUNCIÓN PARA OBTENER ESTADO INICIAL
-================================ */
-
-function getInitialResetState() {
-    if (typeof window === "undefined") {
-        return {
-            step: "email" as Step,
-            email: "",
-            secondsLeft: 300,
-        };
-    }
-
-    const saved = localStorage.getItem(RESET_STORAGE_KEY);
-
-    if (!saved) {
-        return {
-            step: "email" as Step,
-            email: "",
-            secondsLeft: 300,
-        };
-    }
-
-    try {
-        const parsed = JSON.parse(saved);
-
-        // 🔒 Validar que el flujo realmente esté activo
-        if (!parsed?.isActive) {
-            return {
-                step: "email" as Step,
-                email: "",
-                secondsLeft: 300,
-            };
-        }
-
-        return {
-            step: parsed.step ?? "email",
-            email: parsed.email ?? "",
-            secondsLeft: parsed.secondsLeft ?? 300,
-        };
-    } catch {
-        localStorage.removeItem(RESET_STORAGE_KEY);
-        return {
-            step: "email" as Step,
-            email: "",
-            secondsLeft: 300,
-        };
-    }
-}
-
-/* ===============================
-   COMPONENTE PRINCIPAL
-================================ */
 
 export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps) {
     const initial = getInitialResetState();
@@ -92,7 +39,7 @@ export function ModalResetContraseña({ open, close }: ForgotPasswordModalProps)
        PERSISTIR ESTADO
     ================================ */
     useEffect(() => {
-        if (!open) return; // 🔒 Solo persistir si la modal está abierta
+        if (!open) return;
 
         const data = {
             isActive: true,
