@@ -68,11 +68,13 @@ export function CreateTaskModal({ open, close, onSubmit }: CreateTaskModalProps)
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h2 className="text-2xl font-bold text-slate-100">Gestión de tareas</h2>
+                        <header>
+                            <h2 className="text-2xl font-bold text-slate-100">Gestión de tareas</h2>
 
-                        <h3 className="mt-2 text-lg font-semibold text-blue-400">Nueva tarea</h3>
+                            <h3 className="mt-2 text-lg font-semibold text-blue-400">Nueva tarea</h3>
 
-                        <p className="mt-1 mb-5 text-sm text-slate-400">Completa la información para registrar una nueva tarea.</p>
+                            <p className="mt-1 mb-5 text-sm text-slate-400">Completa la información para registrar una nueva tarea.</p>
+                        </header>
 
                         <form className="grid gap-4" onSubmit={handleSubmit}>
                             <div className="relative">
