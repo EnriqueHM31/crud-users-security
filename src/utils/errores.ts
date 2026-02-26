@@ -43,7 +43,7 @@ const DEFAULT_HTTP_MESSAGES: Record<number, string> = {
 /**
  * Convierte cualquier error en un mensaje seguro para UI.
  */
-export function getUserErrorMessage(error: unknown): string {
+export function MensajeAmigableParaUsuario(error: unknown): string {
     // Si es error HTTP controlado
     if (error instanceof ApiError) {
         return error.message;
