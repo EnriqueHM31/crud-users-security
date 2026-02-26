@@ -61,7 +61,7 @@ export default function PasswordValidate({ value, onChange, className, ...rest }
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
                         autoComplete="current-password"
-                        {...rest} // 🔥 Aquí hereda id, name, required, etc.
+                        {...rest}
                     />
                 </label>
 

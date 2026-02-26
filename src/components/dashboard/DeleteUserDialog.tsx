@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { User } from "../../types/user.types";
+import type { User, UUID } from "../../types/user.types";
 
 interface DeleteUserDialogProps {
     user: User | null;
     onCancel: () => void;
-    onConfirm: (userId: User["id_usuario"]) => void;
+    onConfirm: (userId: UUID) => void;
 }
 
 export function DeleteUserDialog({ user, onCancel, onConfirm }: DeleteUserDialogProps) {

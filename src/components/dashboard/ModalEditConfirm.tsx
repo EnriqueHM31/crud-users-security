@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { User } from "../../types/user.types";
+import type { UserUpdate } from "../../types/user.types";
 
 interface ModalEditConfirmProps {
     open: boolean;
-    user: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">;
+    user: UserUpdate;
     onCancel: () => void;
     onConfirm: () => void;
 }

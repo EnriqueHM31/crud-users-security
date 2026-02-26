@@ -3,19 +3,22 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { FaEnvelope, FaIdBadge, FaUser, FaUserShield } from "react-icons/fa";
 import { useOpen } from "../../hooks/useOpen";
 import { usePasswordActions } from "../../hooks/usePasswordStore";
-import type { CreateUserInput, User } from "../../types/user.types";
+import type { CreateUserInput, User, UserUpdate, UUID } from "../../types/user.types";
 import { ModalEditConfirm } from "./ModalEditConfirm";
 import { ModalResetPassword } from "./ModalResetContrasena";
 
+export interface EditUser extends UserUpdate {
+    id_usuario: UUID;
+}
 interface EditUserModalProps {
     open: boolean;
     close: () => void;
-    selectedUser: Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">;
-    onSubmit: (payload: Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => void;
+    selectedUser: EditUser;
+    onSubmit: (payload: EditUser) => void;
 }
 
 export function ModalEdit({ open, close, selectedUser, onSubmit }: EditUserModalProps) {
-    const [values, setValues] = useState<Omit<User, "fecha_creacion" | "fecha_actualizacion" | "contrasena">>(selectedUser);
+    const [values, setValues] = useState<EditUser>(selectedUser);
     const confirmModal = useOpen();
     const passwordModal = useOpen();
     const { editPasswordUser } = usePasswordActions();

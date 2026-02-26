@@ -4,7 +4,7 @@ import PasswordValidate from "../layout/PasswordValidate";
 import { useOpen } from "../../hooks/useOpen";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { toast } from "sonner";
-import { z } from "zod";
+import { changePasswordLoginSchema } from "../../utils/schemas.util";
 
 export interface ModalResetProps {
     changePassword: {
@@ -17,29 +17,13 @@ export interface ModalResetProps {
     close: () => void;
 }
 
-const changePasswordSchema = z
-    .object({
-        newPassword: z
-            .string()
-            .min(8, "Debe tener mínimo 8 caracteres")
-            .regex(/[A-Z]/, "Debe incluir una mayúscula [A-Z]")
-            .regex(/[0-9]/, "Debe incluir un número [0-9]")
-            .regex(/[@$!%*?&#]/, "Debe incluir un carácter especial [@$!%*?&#]"),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-        message: "Las nuevas contraseñas no coinciden",
-        path: ["confirmPassword"],
-    });
-
 export default function ModalReset({ changePassword, handleChangePassword, handleSubmit, isLoading, close }: ModalResetProps) {
     const openShowPassword = useOpen();
 
     const handleSubmitContrasenaLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const validation = changePasswordSchema.safeParse(changePassword as Record<string, unknown>);
-        console.log({ validation });
+        const validation = changePasswordLoginSchema.safeParse(changePassword as Record<string, unknown>);
 
         if (!validation.success) {
             toast.error(validation?.error?.issues[0]?.message ?? "La nueva contraseña no cumple las reglas de seguridad.");

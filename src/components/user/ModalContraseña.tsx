@@ -18,7 +18,7 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
     const userId = useCurrentUserId();
     const { changePassword } = usePasswordActions();
 
-    const [form, setForm] = useState({
+    const [formChangePassword, setFormChangePassword] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
@@ -27,15 +27,15 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
     const openShowPassword1 = useOpen();
     const openShowPassword3 = useOpen();
 
-    const handleFieldChange = (field: keyof typeof form) => (event: ChangeEvent<HTMLInputElement>) => {
-        setForm((prev) => ({
+    const handleFieldChange = (field: keyof typeof formChangePassword) => (event: ChangeEvent<HTMLInputElement>) => {
+        setFormChangePassword((prev) => ({
             ...prev,
             [field]: event.target.value,
         }));
     };
 
     const resetForm = () => {
-        setForm({
+        setFormChangePassword({
             currentPassword: "",
             newPassword: "",
             confirmPassword: "",
@@ -49,9 +49,8 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
             toast.error("No se puede cambiar la contraseña sin identificarse.");
             return;
         }
-        console.log({ form });
 
-        const validation = changePasswordSchema.safeParse(form as Record<string, unknown>);
+        const validation = changePasswordSchema.safeParse(formChangePassword as Record<string, unknown>);
         console.log({ validation });
 
         if (!validation.success) {
@@ -107,7 +106,7 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
                                     name="currentPassword"
                                     id="currentPassword"
                                     autoComplete="current-password"
-                                    value={form.currentPassword}
+                                    value={formChangePassword.currentPassword}
                                     onChange={handleFieldChange("currentPassword")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-10 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
@@ -123,7 +122,7 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
 
                             {/* Nueva contraseña */}
                             <PasswordValidate
-                                value={form.newPassword}
+                                value={formChangePassword.newPassword}
                                 onChange={handleFieldChange("newPassword")}
                                 placeholder="Nueva contraseña"
                                 name="newPassword"
@@ -140,7 +139,7 @@ export function ModalContraseña({ open, close }: ChangePasswordModalProps) {
                                     autoComplete="new-password"
                                     name="confirmPassword"
                                     id="confirmPassword"
-                                    value={form.confirmPassword}
+                                    value={formChangePassword.confirmPassword}
                                     onChange={handleFieldChange("confirmPassword")}
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-10 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
