@@ -1,18 +1,18 @@
 import { motion } from "framer-motion";
 import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
-import type { User } from "../../types/user.types";
+import type { User, UserCreate, UserUpdate } from "../../types/user.types";
 import { ModalCreate } from "./ModalCreate";
 import { ModalEdit } from "./ModalEdit";
 import { useOpen } from "../../hooks/useOpen";
-import { formatearFechaMexico } from "../../utils/conversiones";
+import { formatearFechaMexico, formatearTelefonoE164 } from "../../utils/conversiones";
 
 interface UserTableProps {
     users: User[];
     onEdit: (user: User | null) => void;
     onDelete: (user: User) => void;
     editingUser?: User | null;
-    handleCreateUser: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion">) => Promise<void>;
-    handleEditSave: (payload: Omit<User, "id_usuario" | "fecha_creacion" | "fecha_actualizacion" | "contrasena">) => Promise<void>;
+    handleCreateUser: (payload: UserCreate) => Promise<void>;
+    handleEditSave: (payload: UserUpdate) => Promise<void>;
 }
 
 export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUser, handleEditSave }: UserTableProps) {
@@ -40,6 +40,7 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                     selectedUser={{
                         id_usuario: editingUser.id_usuario,
                         nombre_usuario: editingUser.nombre_usuario,
+                        telefono: editingUser.telefono,
                         nombre_completo: editingUser.nombre_completo,
                         correo_electronico: editingUser.correo_electronico,
                         rol: editingUser.rol,
@@ -76,6 +77,7 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Usuario</th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Nombre </th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Correo electrónico</th>
+                                <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Telefono</th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Rol</th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Fecha de creación</th>
                                 <th className="border-b border-slate-800 px-3 py-3 text-left text-sm font-medium text-slate-400">Acciones</th>
@@ -87,6 +89,7 @@ export function UserTable({ users, onEdit, onDelete, editingUser, handleCreateUs
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.nombre_usuario}</td>
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.nombre_completo}</td>
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{user.correo_electronico}</td>
+                                    <td className="border-b border-slate-800 px-3 py-3 text-sm">{formatearTelefonoE164(user.telefono)}</td>
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm capitalize">{user.rol}</td>
                                     <td className="border-b border-slate-800 px-3 py-3 text-sm">{formatearFechaMexico(user.fecha_creacion)}</td>
                                     <td className="border-b border-slate-800 px-3 py-3">
