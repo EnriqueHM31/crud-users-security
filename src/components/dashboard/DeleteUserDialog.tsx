@@ -1,13 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { User, UUID } from "../../types/user.types";
+import { useUserActions } from "../../hooks/useUsersStore";
+import type { User } from "../../types/user.types";
 
 interface DeleteUserDialogProps {
     user: User | null;
     onCancel: () => void;
-    onConfirm: (userId: UUID) => void;
 }
 
-export function DeleteUserDialog({ user, onCancel, onConfirm }: DeleteUserDialogProps) {
+export function DeleteUserDialog({ user, onCancel }: DeleteUserDialogProps) {
+    const { deleteUser } = useUserActions();
     return (
         <AnimatePresence>
             {user ? (
@@ -44,7 +45,7 @@ export function DeleteUserDialog({ user, onCancel, onConfirm }: DeleteUserDialog
                                 animate={{ scale: 1, opacity: 1, y: 0, transition: { duration: 0.3 } }}
                                 whileHover={{ scale: 0.9, transition: { duration: 0.2 } }}
                                 className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-900 bg-red-900/30 px-3 py-2 text-sm font-semibold text-red-100 hover:border-red-500"
-                                onClick={() => onConfirm(user.id_usuario)}
+                                onClick={() => deleteUser(user.id_usuario)}
                             >
                                 Eliminar
                             </motion.button>

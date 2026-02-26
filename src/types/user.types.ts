@@ -24,6 +24,10 @@ export type UserUpdate = Omit<User, "id_usuario" | "fecha_creacion" | "fecha_act
 
 export type UserLogueado = Omit<User, "contrasena" | "fecha_actualizacion">;
 
+export interface userUpdateId extends UserUpdate {
+    id_usuario: UUID;
+}
+
 export interface UserState {
     users: User[];
     isLoading: boolean;

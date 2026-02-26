@@ -1,16 +1,16 @@
 import { motion } from "framer-motion";
 import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useOpen } from "../../hooks/useOpen";
-import type { User } from "../../types/user.types";
+import type { User, userUpdateId } from "../../types/user.types";
 import { formatearFechaMexico, formatearTelefonoE164 } from "../../utils/conversiones";
 import { ModalCreate } from "./ModalCreate";
 import { ModalEdit } from "./ModalEdit";
 
 interface UserTableProps {
     users: User[];
-    onEdit: (user: User | null) => void;
+    onEdit: (user: userUpdateId | null) => void;
     onDelete: (user: User) => void;
-    editingUser?: User | null;
+    editingUser?: userUpdateId | null;
 }
 
 export function UserTable({ users, onEdit, onDelete, editingUser }: UserTableProps) {
