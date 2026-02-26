@@ -71,3 +71,26 @@ export function formatearTelefonoE164(phone: string): string {
 
     return `+${foundCode} ${formattedNational}`;
 }
+
+export function splitPhone(phone: string) {
+    if (typeof phone !== "string") {
+        return { countryCode: "", nationalNumber: "" };
+    }
+
+    const numeric = phone.replace(/\D/g, "");
+
+    if (numeric.length <= 10) {
+        return {
+            countryCode: "",
+            nationalNumber: numeric,
+        };
+    }
+
+    const nationalNumber = numeric.slice(-10); // últimos 10
+    const countryCode = numeric.slice(0, -10); // lo demás
+
+    return {
+        countryCode,
+        nationalNumber,
+    };
+}
