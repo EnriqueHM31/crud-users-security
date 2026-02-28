@@ -182,18 +182,22 @@ export function ModalCreate({ open, close }: UserModalProps) {
                                     {openPassword.isOpen ? <IoEye /> : <IoEyeOff />}
                                 </motion.button>
                             </div>
-                            <div className="relative">
-                                <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
-                                <select
-                                    value={FormUser.rol}
-                                    id="role"
-                                    autoComplete="role"
-                                    onChange={handleFieldChange("rol")}
-                                    className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pr-3 pl-10 text-sm text-slate-100 outline-none focus:border-blue-500"
-                                >
-                                    <option value="admin">Admin</option>
-                                    <option value="user">User</option>
-                                </select>
+                            <div className="w-full rounded-lg border border-slate-800 bg-slate-900">
+                                <div className="relative pl-10">
+                                    <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
+                                    <select
+                                        value={FormUser.rol}
+                                        id="role"
+                                        autoComplete="role"
+                                        onChange={handleFieldChange("rol")}
+                                        className="w-full cursor-pointer rounded-lg bg-slate-900 py-2.5 pr-3 pl-0 text-sm text-slate-100 outline-none focus:border-blue-500"
+                                    >
+                                        <option value="admin" className="">
+                                            Admin
+                                        </option>
+                                        <option value="user">User</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div className="flex flex-1 items-end justify-end gap-3 pt-2">
