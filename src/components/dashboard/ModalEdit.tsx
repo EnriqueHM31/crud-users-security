@@ -138,21 +138,22 @@ export function ModalEdit({ open, close, selectedUser }: EditUserModalProps) {
                                     className="w-full rounded-lg border border-slate-800 bg-slate-900 text-sm text-slate-100 outline-none focus:border-blue-500"
                                 />
 
-                                <div className="relative">
-                                    <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
-                                    <select
-                                        autoComplete="rol"
-                                        id="rol"
-                                        name="rol"
-                                        value={values.rol}
-                                        onChange={handleFieldChange("rol")}
-                                        className="w-full rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 text-sm text-slate-100 focus:border-blue-500"
-                                    >
-                                        <option value="admin">Admin</option>
-                                        <option value="user">User</option>
-                                    </select>
+                                <div className="w-full rounded-lg border border-slate-800 bg-slate-900">
+                                    <div className="relative pl-10">
+                                        <FaUserShield className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-500" />
+                                        <select
+                                            autoComplete="rol"
+                                            id="rol"
+                                            name="rol"
+                                            value={values.rol}
+                                            onChange={handleFieldChange("rol")}
+                                            className="w-full cursor-pointer rounded-lg border border-slate-800 bg-slate-900 py-2.5 pl-10 text-sm text-slate-100 focus:border-blue-500"
+                                        >
+                                            <option value="admin">Admin</option>
+                                            <option value="user">User</option>
+                                        </select>
+                                    </div>
                                 </div>
-
                                 <div className="relative mt-4">
                                     <motion.button
                                         type="button"
