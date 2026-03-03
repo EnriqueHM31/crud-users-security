@@ -46,7 +46,6 @@ export function ModalCreate({ open, close }: UserModalProps) {
         }
 
         const ok = await createUser(FormUser);
-        console.log(ok);
 
         if (ok) {
             setFormUser(emptyFormUser);
@@ -59,7 +58,6 @@ export function ModalCreate({ open, close }: UserModalProps) {
         close();
     };
 
-    console.log({ FormUser });
     return (
         <AnimatePresence>
             {open && (
